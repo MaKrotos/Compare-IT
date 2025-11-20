@@ -1,0 +1,32 @@
+services:
+  frontend-dev:
+    image: node:lts-alpine
+    container_name: frontend-dev-compareit
+    command: sh -c "npm install -g npm@latest && npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    ports:
+      - "5173:5173"
+    working_dir: /app
+    volumes:
+      - ./Frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - compareit-network
+    depends_on:
+      - backend
+
+  backend:
+    build: 
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: backend-compareit
+    ports:
+      - "8080:8080"
+    networks:
+      - compareit-network
+
+networks:
+  compareit-network:
+    driver: bridge

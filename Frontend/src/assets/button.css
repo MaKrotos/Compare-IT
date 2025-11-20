@@ -1,0 +1,118 @@
+/* Стили для компонента Button */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.btn:focus-visible {
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #3b82f6; /* white and blue-500 */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.btn-default {
+  background-color: #3b82f6; /* blue-500 */
+  color: #ffffff; /* primary-foreground */
+  border: none;
+}
+
+.btn-default:hover {
+  background-color: rgba(59, 130, 246, 0.9); /* blue-500 with 90% opacity */
+}
+
+.btn-destructive {
+  background-color: #ef4444; /* destructive */
+  color: #ffffff; /* destructive-foreground */
+  border: none;
+}
+
+.btn-destructive:hover {
+  background-color: rgba(239, 68, 68, 0.9); /* destructive with 90% opacity */
+}
+
+.btn-outline {
+  border-width: 1px;
+  border-color: #e5e7eb; /* input */
+  background-color: transparent;
+}
+
+.btn-outline:hover {
+  background-color: #f3f4f6; /* accent */
+  color: #1f2937; /* accent-foreground */
+}
+
+.btn-secondary {
+  background-color: #f3f4f6; /* secondary */
+  color: #1f2937; /* secondary-foreground */
+  border: none;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(243, 244, 246, 0.8); /* secondary with 80% opacity */
+}
+
+.btn-ghost {
+  background-color: transparent;
+  border: none;
+}
+
+.btn-ghost:hover {
+  background-color: #f3f4f6; /* accent */
+  color: #1f2937; /* accent-foreground */
+}
+
+.btn-link {
+  text-decoration: underline;
+  text-decoration-offset: 4px;
+  color: #3b82f6; /* primary */
+  background-color: transparent;
+  border: none;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.btn-sm {
+  height: 2.25rem;
+  border-radius: 9999px;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.btn-lg {
+  height: 2.75rem;
+  border-radius: 9999px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.btn-icon {
+  height: 2.5rem;
+  width: 2.5rem;
+  padding: 0;
+}
+
+.btn-default-size {
+  height: 2.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: 9999px;
+}

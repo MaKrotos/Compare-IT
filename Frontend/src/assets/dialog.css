@@ -1,0 +1,33 @@
+/* Стили для компонента Dialog */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: rgba(0, 0, 0, 0.8); /* black with 80% opacity */
+  backdrop-filter: blur(8px);
+}
+
+.dialog-content {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 50;
+  display: grid;
+  width: 100%;
+  max-width: 32rem; /* 512px */
+  transform: translate(-50%, -50%);
+  gap: 1rem;
+  border-width: 1px;
+  background-color: #ffffff; /* background */
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  transition-property: all;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (min-width: 640px) {
+  .dialog-content {
+    border-radius: 0.5rem;
+  }
+}

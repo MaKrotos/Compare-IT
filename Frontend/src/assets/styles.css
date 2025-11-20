@@ -1,0 +1,550 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Общие стили для всего приложения */
+body {
+  background-color: #f9fafb; /* gray-50 */
+  color: #111827; /* gray-900 */
+}
+
+/* Стили для карточек */
+.card {
+  padding: 10px;
+  border-radius: 0.75rem;
+  border-width: 1px;
+  border-color: #e5e7eb; /* gray-200 */
+  background-color: #ffffff; /* white */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition-property: all;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  border-bottom-width: 1px;
+  border-color: #e5e7eb; /* gray-200 */
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: #111827; /* gray-900 */
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+/* Стили для кнопок */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.btn:focus-visible {
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #3b82f6; /* white and blue-500 */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.btn-primary {
+  background-color: #2563eb; /* blue-600 */
+  color: #ffffff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8; /* blue-700 */
+}
+
+.btn-secondary {
+  background-color: #f3f4f6; /* gray-100 */
+  color: #111827; /* gray-900 */
+  border: none;
+}
+
+.btn-secondary:hover {
+  background-color: #e5e7eb; /* gray-200 */
+}
+
+.btn-destructive {
+  background-color: #dc2626; /* red-600 */
+  color: #ffffff;
+  border: none;
+}
+
+.btn-destructive:hover {
+  background-color: #b91c1c; /* red-700 */
+}
+
+.btn-outline {
+  border-width: 1px;
+  border-color: #d1d5db; /* gray-300 */
+  background-color: transparent;
+}
+
+.btn-outline:hover {
+  background-color: #f3f4f6; /* gray-50 */
+}
+
+.btn-ghost {
+  background-color: transparent;
+}
+
+.btn-ghost:hover {
+  background-color: #f3f4f6; /* gray-100 */
+}
+
+.btn-sm {
+  height: 2.25rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.btn-lg {
+  height: 2.75rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.btn-icon {
+  height: 2.5rem;
+  width: 2.5rem;
+  padding: 0;
+}
+
+/* Стили для инпутов */
+.input {
+  display: flex;
+  height: 2.5rem;
+  width: 100%;
+  border-radius: 9999px;
+  border-width: 1px;
+  border-color: #e5e7eb; /* input */
+  background-color: #ffffff; /* background */
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.input::file-selector-button {
+  border-width: 0;
+  background-color: transparent;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #6b7280; /* muted-foreground */
+}
+
+.input:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #3b82f6; /* ring */
+  box-shadow: 0 0 0 4px #ffffff; /* ring-offset */
+}
+
+.input:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Стили для текстовых полей */
+.textarea {
+  display: flex;
+  min-height: 80px;
+  width: 100%;
+  border-radius: 9999px;
+  border-width: 1px;
+  border-color: #e5e7eb; /* input */
+  background-color: #ffffff; /* background */
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.textarea::placeholder {
+  color: #6b7280; /* muted-foreground */
+}
+
+.textarea:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #3b82f6; /* ring */
+  box-shadow: 0 0 0 4px #ffffff; /* ring-offset */
+}
+
+.textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Стили для бейджей */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  border-width: 1px;
+  padding-left: 0.625rem;
+  padding-right: 0.625rem;
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.badge:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #3b82f6; /* ring */
+  box-shadow: 0 0 0 4px #ffffff; /* ring-offset */
+}
+
+.badge-default {
+  border-color: transparent;
+  background-color: #3b82f6; /* primary */
+  color: #ffffff; /* primary-foreground */
+}
+
+.badge-default:hover {
+  background-color: rgba(59, 130, 246, 0.8); /* primary with 80% opacity */
+}
+
+.badge-secondary {
+  border-color: transparent;
+  background-color: #f3f4f6; /* secondary */
+  color: #1f2937; /* secondary-foreground */
+}
+
+.badge-secondary:hover {
+  background-color: rgba(243, 244, 246, 0.8); /* secondary with 80% opacity */
+}
+
+.badge-destructive {
+  border-color: transparent;
+  background-color: #ef4444; /* destructive */
+  color: #ffffff; /* destructive-foreground */
+}
+
+.badge-destructive:hover {
+  background-color: rgba(239, 68, 68, 0.8); /* destructive with 80% opacity */
+}
+
+.badge-outline {
+  color: #111827; /* foreground */
+  border-color: #d1d5db; /* gray-300 */
+}
+
+/* Стили для диалогов */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: rgba(0, 0, 0, 0.8); /* black with 80% opacity */
+  backdrop-filter: blur(8px);
+}
+
+.dialog-content {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 50;
+  display: grid;
+  width: 100%;
+  max-width: 32rem; /* 512px */
+  transform: translate(-50%, -50%);
+  gap: 1rem;
+  border-width: 1px;
+  background-color: #ffffff; /* background */
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  transition-property: all;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dialog-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .dialog-header {
+    text-align: left;
+  }
+}
+
+.dialog-title {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+
+.dialog-description {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #6b7280; /* muted-foreground */
+}
+
+.dialog-footer {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .dialog-footer {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}
+
+/* Стили для слайдеров */
+.slider {
+  position: relative;
+  display: flex;
+  width: 100%;
+  touch-action: none;
+  user-select: none;
+  align-items: center;
+}
+
+.slider-track {
+  position: relative;
+  height: 0.5rem;
+  width: 100%;
+  flex-grow: 1;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: #f3f4f6; /* secondary */
+}
+
+.slider-range {
+  position: absolute;
+  height: 100%;
+  background-color: #3b82f6; /* primary */
+}
+
+.slider-thumb {
+  display: block;
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 9999px;
+  border-width: 2px;
+  border-color: #3b82f6; /* primary */
+  background-color: #ffffff; /* background */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slider-thumb:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #3b82f6; /* ring */
+  box-shadow: 0 0 0 4px #ffffff; /* ring-offset */
+}
+
+.slider-thumb:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Анимации */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  opacity: 1;
+  transform: translateY(20px);
+}
+
+.scale-enter-active,
+.scale-leave-active {
+  transition: all 0.3s ease;
+}
+
+.scale-enter-from,
+.scale-leave-to {
+  opacity: 1;
+  transform: scale(0.95);
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px), (orientation: portrait) and (max-aspect-ratio: 1/1) {
+  .card-content {
+    padding: 1rem;
+  }
+  
+  .card-header {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  
+  .dialog-content {
+    max-width: 95vw;
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+  
+  /* Стили для диалогов импорта/экспорта */
+  .import-export-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 24px;
+  }
+  
+  /* Стили для диалогов */
+  .dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  /* Стили для диалогов */
+  .dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+  }
+  
+  .dialog-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Стили для кнопок импорта/экспорта */
+  .import-export-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 24px;
+    margin-bottom: 32px;
+  }
+  
+  .import-export-buttons .btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .import-export-buttons .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dialog-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  
+  .dialog-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+  }
+  
+  .dialog-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+  }
+  
+  .import-export-buttons .btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
