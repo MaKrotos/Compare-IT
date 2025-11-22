@@ -103,12 +103,26 @@ export default {
         
         const collection = await getPublicCollection(publicLink)
         
-        // Сохраняем текущие элементы для сравнения
+        // Сравниваем новые и старые значения поэлементно для более точного определения изменений
         const oldItems = items.value
+        const newItems = collection.items || []
+        
+        // Проверяем, изменились ли данные
+        let hasChanges = oldItems.length !== newItems.length
+        
+        if (!hasChanges) {
+          // Поэлементное сравнение
+          for (let i = 0; i < oldItems.length; i++) {
+            if (JSON.stringify(oldItems[i]) !== JSON.stringify(newItems[i])) {
+              hasChanges = true
+              break
+            }
+          }
+        }
         
         // Обновляем только если данные действительно изменились
-        if (JSON.stringify(oldItems) !== JSON.stringify(collection.items || [])) {
-          items.value = collection.items || []
+        if (hasChanges) {
+          items.value = newItems
         }
         
         collectionName.value = collection.name || 'Публичная коллекция'
