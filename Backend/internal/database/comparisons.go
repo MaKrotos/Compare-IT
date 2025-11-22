@@ -152,6 +152,18 @@ func GetComparisonCollectionsByUserID(userID int) ([]models.ComparisonCollection
 
 // UpdateComparisonCollection обновляет коллекцию сравнений
 func UpdateComparisonCollection(collection *models.ComparisonCollection) error {
+	// Сначала получаем текущую коллекцию из базы данных, чтобы сохранить публичную ссылку
+	currentCollection, err := GetComparisonCollectionByID(collection.ID, collection.UserID)
+	if err != nil {
+		return fmt.Errorf("failed to get current comparison collection: %w", err)
+	}
+	
+	// Если у текущей коллекции есть публичная ссылка, сохраняем её
+	var publicLink *string
+	if currentCollection != nil && currentCollection.PublicLink != nil {
+		publicLink = currentCollection.PublicLink
+	}
+	
 	query := `
 		UPDATE comparison_collections
 		SET name = $1, items = $2, public_link = $3, updated_at = CURRENT_TIMESTAMP
@@ -166,7 +178,7 @@ func UpdateComparisonCollection(collection *models.ComparisonCollection) error {
 	result, err := GetDB().Exec(query,
 		collection.Name,
 		itemsJSON,
-		collection.PublicLink,
+		publicLink, // Используем сохраненную публичную ссылку
 		collection.ID,
 		collection.UserID,
 	)
@@ -309,6 +321,7 @@ func RemovePublicLink(collectionID int) error {
 
 // GetComparisonCollectionByPublicLink получает коллекцию по публичной ссылке
 func GetComparisonCollectionByPublicLink(publicLink string) (*models.ComparisonCollection, error) {
+	// Сначала пытаемся найти коллекцию по точному совпадению ссылки
 	query := `
 		SELECT id, user_id, name, items, public_link, created_at, updated_at
 		FROM comparison_collections
@@ -330,10 +343,35 @@ func GetComparisonCollectionByPublicLink(publicLink string) (*models.ComparisonC
 		&updatedAt,
 	)
 	if err != nil {
+		// Если не нашли по точному совпадению, проверяем, может быть ссылка передана как часть URL
 		if err == sql.ErrNoRows {
-			return nil, nil
+			// Пытаемся найти коллекцию, у которой ссылка совпадает с концом переданной строки
+			query = `
+				SELECT id, user_id, name, items, public_link, created_at, updated_at
+				FROM comparison_collections
+				WHERE public_link = $1 OR $1 LIKE '%' || public_link
+			`
+			
+			err = GetDB().QueryRow(query, publicLink).Scan(
+				&collection.ID,
+				&collection.UserID,
+				&collection.Name,
+				&itemsJSON,
+				&publicLinkValue,
+				&createdAt,
+				&updatedAt,
+			)
+			
+			// Если все равно не нашли, возвращаем nil
+			if err != nil {
+				if err == sql.ErrNoRows {
+					return nil, nil
+				}
+				return nil, fmt.Errorf("failed to get comparison collection by public link: %w", err)
+			}
+		} else {
+			return nil, fmt.Errorf("failed to get comparison collection by public link: %w", err)
 		}
-		return nil, fmt.Errorf("failed to get comparison collection by public link: %w", err)
 	}
 	
 	// Парсим JSON с элементами

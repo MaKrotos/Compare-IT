@@ -37,6 +37,7 @@
 
 <script>
 import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import Button from '@/components/ui/Button.vue'
 import { Lock, LogIn, Loader2 } from 'lucide-vue-next'
 
@@ -49,12 +50,22 @@ export default {
     Loader2
   },
   setup() {
+    const route = useRoute()
     const isAuthenticated = ref(false)
     const isLoading = ref(false)
     const error = ref(null)
     
+    // Проверка, является ли текущий маршрут публичным
+    const isPublicRoute = route.name === 'PublicCollection'
+    
     // Проверка авторизации при монтировании
     onMounted(() => {
+      // Для публичных маршрутов пропускаем авторизацию
+      if (isPublicRoute) {
+        isAuthenticated.value = true
+        return
+      }
+      
       checkAuthStatus()
       // Попытка автоматической авторизации только если пользователь еще не авторизован
       if (window.Telegram?.WebApp && !isAuthenticated.value) {

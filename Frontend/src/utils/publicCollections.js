@@ -70,12 +70,20 @@ export async function removePublicLink(collectionId) {
  */
 export async function getPublicCollection(publicLink) {
   try {
+    // Проверяем, является ли ссылка полной (содержит ли она URL)
+    let link = publicLink;
+    if (publicLink.includes('/')) {
+      // Извлекаем последнюю часть URL как публичную ссылку
+      const urlParts = publicLink.split('/');
+      link = urlParts[urlParts.length - 1];
+    }
+    
     const response = await fetch(`${API_BASE_URL}/collections/public`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ public_link: publicLink })
+      body: JSON.stringify({ public_link: link })
     });
 
     if (!response.ok) {

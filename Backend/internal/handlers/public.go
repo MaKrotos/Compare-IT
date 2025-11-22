@@ -33,25 +33,80 @@ func GeneratePublicLinkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Проверяем, что коллекция принадлежит пользователю
-	collection, err := database.GetComparisonCollectionByID(requestData.CollectionID, userID)
+	// Сначала пытаемся получить коллекцию сравнений
+	comparisonCollection, err := database.GetComparisonCollectionByID(requestData.CollectionID, userID)
+	if err != nil {
+		// Если произошла ошибка при получении коллекции сравнений, пробуем получить обычную коллекцию
+		collection, err := database.GetCollectionByID(requestData.CollectionID, userID)
+		if err != nil {
+			middleware.SendError(w, "Failed to get collection: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		
+		if collection == nil {
+			middleware.SendError(w, "Collection not found", http.StatusNotFound)
+			return
+		}
+		
+		// Генерируем публичную ссылку для обычной коллекции
+		publicLink, err := database.GeneratePublicLinkForCollection(requestData.CollectionID)
+		if err != nil {
+			middleware.SendError(w, "Failed to generate public link: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		
+		// Отправляем ответ
+		response := map[string]interface{}{
+			"public_link": publicLink,
+			"message":    "Public link generated successfully",
+		}
+		
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+	
+	// Если получили коллекцию сравнений
+	if comparisonCollection != nil {
+		// Генерируем публичную ссылку для коллекции сравнений
+		publicLink, err := database.GeneratePublicLink(requestData.CollectionID)
+		if err != nil {
+			middleware.SendError(w, "Failed to generate public link: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		
+		// Отправляем ответ
+		response := map[string]interface{}{
+			"public_link": publicLink,
+			"message":    "Public link generated successfully",
+		}
+		
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+	
+	// Если не нашли ни одну коллекцию, пытаемся получить обычную коллекцию
+	collection, err := database.GetCollectionByID(requestData.CollectionID, userID)
 	if err != nil {
 		middleware.SendError(w, "Failed to get collection: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	
 	if collection == nil {
 		middleware.SendError(w, "Collection not found", http.StatusNotFound)
 		return
 	}
-
-	// Генерируем публичную ссылку
-	publicLink, err := database.GeneratePublicLink(requestData.CollectionID)
+	
+	// Генерируем публичную ссылку для обычной коллекции
+	publicLink, err := database.GeneratePublicLinkForCollection(requestData.CollectionID)
 	if err != nil {
 		middleware.SendError(w, "Failed to generate public link: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	
 	// Отправляем ответ
 	response := map[string]interface{}{
 		"public_link": publicLink,
@@ -88,25 +143,78 @@ func RemovePublicLinkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Проверяем, что коллекция принадлежит пользователю
-	collection, err := database.GetComparisonCollectionByID(requestData.CollectionID, userID)
+	// Сначала пытаемся получить коллекцию сравнений
+	comparisonCollection, err := database.GetComparisonCollectionByID(requestData.CollectionID, userID)
+	if err != nil {
+		// Если произошла ошибка при получении коллекции сравнений, пробуем получить обычную коллекцию
+		collection, err := database.GetCollectionByID(requestData.CollectionID, userID)
+		if err != nil {
+			middleware.SendError(w, "Failed to get collection: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		
+		if collection == nil {
+			middleware.SendError(w, "Collection not found", http.StatusNotFound)
+			return
+		}
+		
+		// Удаляем публичную ссылку для обычной коллекции
+		err = database.RemovePublicLinkForCollection(requestData.CollectionID)
+		if err != nil {
+			middleware.SendError(w, "Failed to remove public link: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		
+		// Отправляем ответ
+		response := map[string]interface{}{
+			"message": "Public link removed successfully",
+		}
+		
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+	
+	// Если получили коллекцию сравнений
+	if comparisonCollection != nil {
+		// Удаляем публичную ссылку для коллекции сравнений
+		err = database.RemovePublicLink(requestData.CollectionID)
+		if err != nil {
+			middleware.SendError(w, "Failed to remove public link: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		
+		// Отправляем ответ
+		response := map[string]interface{}{
+			"message": "Public link removed successfully",
+		}
+		
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+	
+	// Если не нашли ни одну коллекцию, пытаемся получить обычную коллекцию
+	collection, err := database.GetCollectionByID(requestData.CollectionID, userID)
 	if err != nil {
 		middleware.SendError(w, "Failed to get collection: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	
 	if collection == nil {
 		middleware.SendError(w, "Collection not found", http.StatusNotFound)
 		return
 	}
-
-	// Удаляем публичную ссылку
-	err = database.RemovePublicLink(requestData.CollectionID)
+	
+	// Удаляем публичную ссылку для обычной коллекции
+	err = database.RemovePublicLinkForCollection(requestData.CollectionID)
 	if err != nil {
 		middleware.SendError(w, "Failed to remove public link: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	
 	// Отправляем ответ
 	response := map[string]interface{}{
 		"message": "Public link removed successfully",
@@ -134,13 +242,29 @@ func GetPublicCollectionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Получаем коллекцию по публичной ссылке
-	collection, err := database.GetComparisonCollectionByPublicLink(requestData.PublicLink)
+	// Сначала пытаемся получить коллекцию сравнений по публичной ссылке
+	comparisonCollection, err := database.GetComparisonCollectionByPublicLink(requestData.PublicLink)
 	if err != nil {
 		middleware.SendError(w, "Failed to get collection: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	// Если нашли коллекцию сравнений, возвращаем её
+	if comparisonCollection != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(comparisonCollection)
+		return
+	}
+
+	// Если не нашли коллекцию сравнений, пытаемся получить обычную коллекцию
+	collection, err := database.GetCollectionByPublicLink(requestData.PublicLink)
+	if err != nil {
+		middleware.SendError(w, "Failed to get collection: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Если не нашли ни одну коллекцию, возвращаем ошибку
 	if collection == nil {
 		middleware.SendError(w, "Collection not found", http.StatusNotFound)
 		return

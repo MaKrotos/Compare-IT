@@ -67,6 +67,10 @@
                 <p class="text-sm text-gray-500">
                   Создана: {{ formatDate(collection.created_at) }}
                 </p>
+                <div v-if="collection.public_link" class="mt-2 flex items-center text-sm text-gray-500">
+                  <Link class="w-4 h-4 mr-1" />
+                  <span>Публичная ссылка создана</span>
+                </div>
               </div>
               <div class="flex gap-1">
                 <Button
@@ -76,6 +80,14 @@
                   class="text-gray-500 hover:text-blue-600"
                 >
                   <Edit3 class="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  @click="togglePublicLink(collection)"
+                  class="text-gray-500 hover:text-green-600"
+                >
+                  <component :is="collection.public_link ? 'Link' : 'Link2'" class="w-4 h-4" />
                 </Button>
                 <Button
                   variant="ghost"
@@ -150,8 +162,9 @@ import DialogHeader from '@/components/ui/DialogHeader.vue'
 import DialogTitle from '@/components/ui/DialogTitle.vue'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
-import { Folder, FolderOpen, Plus, Loader2, Edit3, Trash2, Bookmark, BookmarkPlus, Scale } from 'lucide-vue-next'
+import { Folder, FolderOpen, Plus, Loader2, Edit3, Trash2, Bookmark, BookmarkPlus, Scale, Link, Link2 } from 'lucide-vue-next'
 import { getComparisonCollections, createComparisonCollection, updateComparisonCollection, deleteComparisonCollection } from '@/utils/comparisons.js'
+import { generatePublicLink, removePublicLink } from '@/utils/collections.js'
 
 export default {
   name: 'CollectionsView',
@@ -170,7 +183,9 @@ export default {
     Trash2,
     Bookmark,
     BookmarkPlus,
-    Scale
+    Scale,
+    Link,
+    Link2
   },
   setup() {
     const router = useRouter()
@@ -301,6 +316,43 @@ export default {
       }
     }
 
+    // Включение/выключение публичной ссылки
+    const togglePublicLink = async (collection) => {
+      try {
+        let updatedCollection;
+        if (collection.public_link) {
+          // Удаляем публичную ссылку
+          await removePublicLink(collection.id);
+          updatedCollection = {
+            ...collection,
+            public_link: null
+          };
+          // Обновляем состояние в списке
+          const index = collections.value.findIndex(c => c.id === collection.id);
+          if (index !== -1) {
+            collections.value[index] = updatedCollection;
+          }
+          alert('Публичная ссылка удалена');
+        } else {
+          // Создаем публичную ссылку
+          const publicLink = await generatePublicLink(collection.id);
+          updatedCollection = {
+            ...collection,
+            public_link: publicLink
+          };
+          // Обновляем состояние в списке
+          const index = collections.value.findIndex(c => c.id === collection.id);
+          if (index !== -1) {
+            collections.value[index] = updatedCollection;
+          }
+          alert('Публичная ссылка создана: ' + publicLink);
+        }
+      } catch (error) {
+        console.error('Ошибка при работе с публичной ссылкой:', error);
+        alert('Не удалось изменить статус публичной ссылки: ' + error.message);
+      }
+    };
+
     // Открытие подборки
     const openCollection = (collection) => {
       // Переход к странице сравнений этой коллекции
@@ -335,6 +387,7 @@ export default {
       saveCollection,
       deleteCollection,
       togglePinCollection,
+      togglePublicLink,
       openCollection,
       goToComparison,
       formatDate

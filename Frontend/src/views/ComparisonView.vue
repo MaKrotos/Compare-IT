@@ -37,6 +37,39 @@
           Открыть
         </Button>
         
+        <!-- Кнопки для работы с публичными ссылками -->
+        <Button
+          v-if="collectionId && isCollectionLoaded"
+          variant="outline"
+          class="gap-2 px-4 py-2 text-base font-medium"
+          @click="togglePublicLink"
+        >
+          <component :is="publicLink ? 'Link' : 'Link2'" class="w-5 h-5" />
+          {{ publicLink ? 'Удалить ссылку' : 'Создать ссылку' }}
+        </Button>
+        
+        <Button
+          v-if="publicLink"
+          variant="outline"
+          class="gap-2 px-4 py-2 text-base font-medium"
+          @click="copyPublicLink"
+        >
+          <Copy class="w-5 h-5" />
+          Копировать ссылку
+        </Button>
+      </div>
+      
+      <!-- Отображение публичной ссылки -->
+      <div v-if="publicLink" class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div class="flex items-center justify-between">
+          <div class="flex-1">
+            <p class="text-sm text-blue-800 font-medium mb-1">Публичная ссылка для просмотра:</p>
+            <p class="text-sm text-blue-600 break-all">{{ fullPublicLink }}</p>
+          </div>
+          <Button variant="ghost" size="icon" @click="copyPublicLink" class="text-blue-600 hover:text-blue-800">
+            <Copy class="w-4 h-4" />
+          </Button>
+        </div>
       </div>
       
       <!-- Поле для ввода данных импорта -->
@@ -115,7 +148,7 @@
 </template>
 
 <script>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Dialog from '@/components/ui/Dialog.vue'
 import DialogContent from '@/components/ui/DialogContent.vue'
@@ -126,8 +159,9 @@ import Button from '@/components/ui/Button.vue'
 import Textarea from '@/components/ui/Textarea.vue'
 import AddLinkForm from '@/components/comparison/AddLinkForm.vue'
 import ComparisonCard from '@/components/comparison/ComparisonCard.vue'
-import { Scale, Loader2, Download, Upload, FolderOpen, Save } from 'lucide-vue-next'
+import { Scale, Loader2, Download, Upload, FolderOpen, Save, Link, Link2, Copy } from 'lucide-vue-next'
 import { getComparisonCollectionById } from '@/utils/comparisons.js'
+import { generatePublicLink, removePublicLink } from '@/utils/collections.js'
 
 export default {
   name: 'ComparisonView',
@@ -146,7 +180,10 @@ export default {
     Download,
     Upload,
     Save,
-    FolderOpen
+    FolderOpen,
+    Link,
+    Link2,
+    Copy
   },
   setup() {
     const route = useRoute()
@@ -157,6 +194,8 @@ export default {
     const importData = ref('')
     const showImportField = ref(false)
     const showCollectionsDialog = ref(false)
+    const collectionId = ref(null)
+    const publicLink = ref(null)
     let saveTimeout = null;
     let isCollectionLoaded = false;
     let originalCollectionName = '';
@@ -164,14 +203,15 @@ export default {
     // Инициализация
     onMounted(async () => {
       // Проверяем, есть ли параметр collectionId в URL
-      const collectionId = route.query.collectionId;
-      if (collectionId) {
+      collectionId.value = route.query.collectionId;
+      if (collectionId.value) {
         // Устанавливаем флаг до загрузки коллекции, чтобы избежать автосохранения
         isCollectionLoaded = true;
         // Загружаем коллекцию с бэкенда
         try {
-          const collection = await getComparisonCollectionById(collectionId);
+          const collection = await getComparisonCollectionById(collectionId.value);
           items.value = collection.items || [];
+          publicLink.value = collection.public_link || null;
           // Сохраняем оригинальное название коллекции
           originalCollectionName = collection.name || `Коллекция ${new Date().toLocaleDateString()}`;
         } catch (error) {
@@ -235,11 +275,56 @@ export default {
     // Отслеживаем изменения в items и запускаем автосохранение
     watch(items, () => {
       // Проверяем, есть ли ID коллекции в URL и была ли коллекция загружена
-      const collectionId = route.query.collectionId;
-      if (collectionId && isCollectionLoaded) {
+      if (collectionId.value && isCollectionLoaded) {
         autoSaveCollection();
       }
     }, { deep: true })
+
+    // Включение/выключение публичной ссылки
+    const togglePublicLink = async () => {
+      try {
+        if (publicLink.value) {
+          // Удаляем публичную ссылку
+          await removePublicLink(collectionId.value);
+          publicLink.value = null;
+          alert('Публичная ссылка удалена');
+        } else {
+          // Создаем публичную ссылку
+          const link = await generatePublicLink(collectionId.value);
+          publicLink.value = link;
+          alert('Публичная ссылка создана');
+        }
+      } catch (error) {
+        console.error('Ошибка при работе с публичной ссылкой:', error);
+        alert('Не удалось изменить статус публичной ссылки: ' + error.message);
+      }
+    };
+
+    // Копирование публичной ссылки в буфер обмена
+    const copyPublicLink = async () => {
+      try {
+        await navigator.clipboard.writeText(fullPublicLink.value);
+        alert('Ссылка скопирована в буфер обмена!');
+      } catch (error) {
+        console.error('Ошибка при копировании ссылки:', error);
+        // Альтернативный способ копирования
+        const textArea = document.createElement('textarea');
+        textArea.value = fullPublicLink.value;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Ссылка скопирована в буфер обмена!');
+      }
+    };
+
+    // Полная публичная ссылка
+    const fullPublicLink = computed(() => {
+      if (!publicLink.value) return '';
+      // В реальном приложении домен будет браться из конфигурации
+      const domain = window.location.origin;
+      return `${domain}/public/${publicLink.value}`;
+    });
 
     // Функция для экспорта данных
     const handleExport = () => {
@@ -586,7 +671,12 @@ export default {
       triggerImport,
       selectText,
       saveCurrentCollection,
-      goToCollections
+      goToCollections,
+      togglePublicLink,
+      copyPublicLink,
+      fullPublicLink,
+      collectionId,
+      publicLink
     }
   }
 }

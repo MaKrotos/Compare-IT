@@ -139,3 +139,80 @@ export async function getCollectionById(collectionId) {
     throw error;
   }
 }
+
+/**
+ * Генерирует публичную ссылку для подборки
+ */
+export async function generatePublicLink(collectionId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/collections/generate-public-link`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getAuthToken()}`
+      },
+      body: JSON.stringify({ collection_id: collectionId })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.public_link;
+  } catch (error) {
+    console.error('Ошибка при генерации публичной ссылки:', error);
+    throw error;
+  }
+}
+
+/**
+ * Удаляет публичную ссылку для подборки
+ */
+export async function removePublicLink(collectionId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/collections/remove-public-link`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getAuthToken()}`
+      },
+      body: JSON.stringify({ collection_id: collectionId })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Ошибка при удалении публичной ссылки:', error);
+    throw error;
+  }
+}
+
+/**
+ * Получает публичную подборку по ссылке
+ */
+export async function getPublicCollection(publicLink) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/collections/public`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ public_link: publicLink })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Ошибка при получении публичной подборки:', error);
+    throw error;
+  }
+}
