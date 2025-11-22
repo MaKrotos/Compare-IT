@@ -1,6 +1,5 @@
 <template>
   <div class="slider">
-
     <input
       type="range"
       :min="min"
@@ -62,3 +61,38 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/* Стили для компонента Slider */
+.slider {
+  position: relative;
+  display: flex;
+  width: 100%;
+  touch-action: none;
+  user-select: none;
+  align-items: center;
+}
+
+.slider-track {
+  position: relative;
+  height: 0.5rem;
+  width: 100%;
+  flex-grow: 1;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: #f3f4f6; /* secondary */
+}
+
+.slider-range {
+  position: absolute;
+  height: 100%;
+  background-color: #3b82f6; /* primary */
+}
+
+.slider-input {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+</style>

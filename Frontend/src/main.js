@@ -1,15 +1,11 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import router from './router'
 
 // Добавляем глобальные стили
 import './assets/styles.css'
-import './assets/button.css'
-import './assets/card.css'
-import './assets/dialog.css'
-import './assets/slider.css'
-import './assets/add-link-form.css'
-import './assets/comparison-card.css'
-import './assets/pro-con-item.css'
-import './assets/styles.css'
+import './assets/theme.css'
 
-createApp(App).mount('#app')
+const app = createApp(App)
+app.use(router)
+app.mount('#app')

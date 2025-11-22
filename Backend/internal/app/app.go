@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"backend/internal/database"
 	"backend/internal/handlers"
 	"backend/internal/middleware"
 	"backend/internal/router"
@@ -20,6 +21,9 @@ type App struct {
 }
 
 func New() *App {
+	// Инициализируем подключение к базе данных
+	database.InitDB()
+	
 	// Создаем маршрутизатор
 	r := router.New()
 
@@ -65,6 +69,9 @@ func (a *App) Run() {
 	if err := a.server.Shutdown(ctx); err != nil {
 		log.Fatalf("Could not gracefully shutdown the server: %v\n", err)
 	}
+
+	// Закрываем подключение к базе данных
+	database.CloseDB()
 
 	fmt.Println("Server stopped")
 }

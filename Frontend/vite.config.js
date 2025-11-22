@@ -13,8 +13,14 @@ export default defineConfig({
         target: 'http://backend:8080',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/backend/, '')
+      },
+       '/api': {
+        target: 'http://backend:8080',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
+    
   },
   build: {
     outDir: 'dist',

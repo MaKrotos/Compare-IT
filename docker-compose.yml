@@ -16,9 +16,10 @@ services:
       - compareit-network
     depends_on:
       - backend
+      - postgres
 
   backend:
-    build: 
+    build:
       context: ./Backend
       dockerfile: Dockerfile
     container_name: backend-compareit
@@ -26,6 +27,30 @@ services:
       - "8080:8080"
     networks:
       - compareit-network
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgres://compareit_user:compareit_pass@postgres:5432/compareit_db?sslmode=disable
+      - JWT_SECRET=your_jwt_secret_here
+      - TELEGRAM_BOT_TOKEN=2202117750:AAH9HAbQhXBGlNutYkWKg_vODVwWa2c8LgA
+      - TELEGRAM_WEBHOOK_URL=
+
+  postgres:
+    image: postgres:13
+    container_name: postgres-compareit
+    environment:
+      POSTGRES_DB: compareit_db
+      POSTGRES_USER: compareit_user
+      POSTGRES_PASSWORD: compareit_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - compareit-network
+
+volumes:
+  postgres_data:
 
 networks:
   compareit-network:
