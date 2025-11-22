@@ -293,9 +293,22 @@ export default {
 
     // Обновление элемента
     const handleUpdateItem = (id, data) => {
-      // В данной реализации мы не обновляем элементы в подборке напрямую
-      // Это можно реализовать при необходимости
-      console.log('Обновление элемента:', id, data)
+      // Находим индекс элемента в коллекции
+      const itemIndex = collection.value.items.findIndex(item => item.id === id)
+      if (itemIndex !== -1) {
+        // Создаем копию элемента с обновленными данными
+        const updatedItem = { ...collection.value.items[itemIndex], ...data }
+        
+        // Создаем копию массива элементов с обновленным элементом
+        const updatedItems = [...collection.value.items]
+        updatedItems[itemIndex] = updatedItem
+        
+        // Обновляем коллекцию с новым массивом элементов
+        collection.value = {
+          ...collection.value,
+          items: updatedItems
+        }
+      }
     }
 
     // Удаление элемента
