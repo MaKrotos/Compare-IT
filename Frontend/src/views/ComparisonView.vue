@@ -158,19 +158,30 @@ export default {
     const showImportField = ref(false)
     const showCollectionsDialog = ref(false)
     let saveTimeout = null;
+    let isCollectionLoaded = false;
+    let originalCollectionName = '';
 
     // Инициализация
     onMounted(async () => {
       // Проверяем, есть ли параметр collectionId в URL
       const collectionId = route.query.collectionId;
       if (collectionId) {
+        // Устанавливаем флаг до загрузки коллекции, чтобы избежать автосохранения
+        isCollectionLoaded = true;
         // Загружаем коллекцию с бэкенда
         try {
           const collection = await getComparisonCollectionById(collectionId);
           items.value = collection.items || [];
+          // Сохраняем оригинальное название коллекции
+          originalCollectionName = collection.name || `Коллекция ${new Date().toLocaleDateString()}`;
         } catch (error) {
           console.error('Ошибка при загрузке коллекции:', error);
+          // Устанавливаем имя по умолчанию в случае ошибки
+          originalCollectionName = `Коллекция ${new Date().toLocaleDateString()}`;
         }
+      } else {
+        // Для новой коллекции устанавливаем имя по умолчанию
+        originalCollectionName = `Коллекция ${new Date().toLocaleDateString()}`;
       }
       isLoading.value = false
     })
@@ -188,7 +199,7 @@ export default {
           // Получаем ID текущей коллекции из URL
           const collectionId = route.query.collectionId;
           
-          if (collectionId) {
+          if (collectionId && isCollectionLoaded) {
             // Отправляем коллекцию на сервер
             const token = localStorage.getItem('auth_token');
             if (!token) {
@@ -198,7 +209,7 @@ export default {
             
             const collection = {
               id: parseInt(collectionId),
-              name: `Коллекция ${new Date().toLocaleDateString()}`,
+              name: originalCollectionName,
               items: items.value
             };
             
@@ -223,9 +234,9 @@ export default {
     
     // Отслеживаем изменения в items и запускаем автосохранение
     watch(items, () => {
-      // Проверяем, есть ли ID коллекции в URL
+      // Проверяем, есть ли ID коллекции в URL и была ли коллекция загружена
       const collectionId = route.query.collectionId;
-      if (collectionId) {
+      if (collectionId && isCollectionLoaded) {
         autoSaveCollection();
       }
     }, { deep: true })
@@ -515,7 +526,7 @@ export default {
           // Обновляем существующую коллекцию
           const collection = {
             id: parseInt(collectionId),
-            name: `Коллекция ${new Date().toLocaleDateString()}`,
+            name: originalCollectionName,
             items: items.value
           };
           

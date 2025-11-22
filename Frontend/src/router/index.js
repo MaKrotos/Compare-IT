@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ComparisonView from '../views/ComparisonView.vue'
 import CollectionsView from '../views/CollectionsView.vue'
-import CollectionDetailView from '../views/CollectionDetailView.vue'
+
 
 const routes = [
   {
@@ -13,16 +13,6 @@ const routes = [
     path: '/compare',
     name: 'Compare',
     component: ComparisonView
-  },
-  {
-    path: '/collections/:id',
-    name: 'CollectionDetail',
-    component: CollectionDetailView
-  },
-  {
-    path: '/public-collection/:publicLink',
-    name: 'PublicCollectionDetail',
-    component: () => import('../views/PublicCollectionDetailView.vue')
   }
 ]
 
