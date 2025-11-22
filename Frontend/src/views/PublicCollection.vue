@@ -48,7 +48,7 @@
         <transition-group name="list" tag="div" class="flex flex-wrap justify-center gap-6">
           <div
             v-for="(item, index) in items"
-            :key="item.id"
+            :key="`item-${item.id}`"
             class="w-full md:w-80"
           >
             <ComparisonCard
@@ -88,7 +88,12 @@ export default {
     // Загрузка публичной коллекции
     const loadPublicCollection = async () => {
       try {
-        isLoading.value = true
+        // При обновлении не показываем индикатор загрузки
+        if (items.value.length > 0) {
+          isLoading.value = false
+        } else {
+          isLoading.value = true
+        }
         error.value = null
         
         const publicLink = route.params.publicLink
@@ -97,7 +102,15 @@ export default {
         }
         
         const collection = await getPublicCollection(publicLink)
-        items.value = collection.items || []
+        
+        // Сохраняем текущие элементы для сравнения
+        const oldItems = items.value
+        
+        // Обновляем только если данные действительно изменились
+        if (JSON.stringify(oldItems) !== JSON.stringify(collection.items || [])) {
+          items.value = collection.items || []
+        }
+        
         collectionName.value = collection.name || 'Публичная коллекция'
       } catch (err) {
         console.error('Ошибка при загрузке публичной коллекции:', err)
