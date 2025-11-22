@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import ComparisonCard from '@/components/comparison/ComparisonCard.vue'
 import { Scale, Loader2, Info } from 'lucide-vue-next'
@@ -83,6 +83,7 @@ export default {
     const collectionName = ref('')
     const isLoading = ref(true)
     const error = ref(null)
+    const refreshInterval = ref(null)
 
     // Загрузка публичной коллекции
     const loadPublicCollection = async () => {
@@ -108,6 +109,17 @@ export default {
 
     onMounted(() => {
       loadPublicCollection()
+      // Установка интервала для автоматического обновления каждые 30 секунд
+      refreshInterval.value = setInterval(() => {
+        loadPublicCollection()
+      }, 30000)
+    })
+
+    // Очистка интервала при размонтировании компонента
+    onUnmounted(() => {
+      if (refreshInterval.value) {
+        clearInterval(refreshInterval.value)
+      }
     })
 
     return {
