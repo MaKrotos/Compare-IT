@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { onMounted } from 'vue'
+import { onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Button from '@/components/ui/Button.vue'
 import { Lock, LogIn, Loader2 } from 'lucide-vue-next'
@@ -53,9 +53,29 @@ export default {
   setup() {
     const route = useRoute()
     
-    // Проверка авторизации при монтировании
+    // Проверка, является ли текущий маршрут публичным
+    const isPublicRoute = computed(() => route.name === 'PublicCollection')
+    
+    // Для публичных маршрутов не показываем форму авторизации
+    if (isPublicRoute.value) {
+      isAuthenticated.value = true
+    }
+    
+    // Следим за изменением маршрута
+    watch(route, (newRoute) => {
+      const isPublic = newRoute.name === 'PublicCollection'
+      if (isPublic) {
+        isAuthenticated.value = true
+      } else {
+        initAuth(newRoute)
+      }
+    })
+    
+    // Проверка авторизации при монтировании для не публичных маршрутов
     onMounted(() => {
-      initAuth(route)
+      if (!isPublicRoute.value) {
+        initAuth(route)
+      }
     })
     
     return {

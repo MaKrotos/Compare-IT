@@ -113,11 +113,12 @@ export const loginWithTelegram = async () => {
 }
 
 // Инициализация состояния авторизации
-export const initAuth = () => {
-  const route = useRoute()
+export const initAuth = (route) => {
+  // Если route не передан, получаем его из useRoute
+  const routeToUse = route || useRoute()
   
   // Проверка, является ли текущий маршрут публичным
-  const isPublicRoute = route.name === 'PublicCollection'
+  const isPublicRoute = routeToUse.name === 'PublicCollection'
   
   // Для публичных маршрутов пропускаем авторизацию
   if (isPublicRoute) {
@@ -128,6 +129,7 @@ export const initAuth = () => {
   checkAuthStatus()
   
   // Попытка автоматической авторизации только если пользователь еще не авторизован
+  // и это не публичный маршрут
   if (window.Telegram?.WebApp && !isAuthenticated.value) {
     loginWithTelegram()
   }
