@@ -32,6 +32,12 @@ func CreateComparisonCollectionHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Устанавливаем ID пользователя
 	collection.UserID = userID
+	
+	// Устанавливаем значения по умолчанию для весов рейтингов, если они не заданы
+	if collection.PriceRatingWeight == 0 && collection.ProsConsRatingWeight == 0 {
+		collection.PriceRatingWeight = 20
+		collection.ProsConsRatingWeight = 80
+	}
 
 	// Создаем коллекцию в базе данных
 	if err := database.CreateComparisonCollection(&collection); err != nil {
@@ -80,9 +86,11 @@ func UpdateComparisonCollectionHandler(w http.ResponseWriter, r *http.Request) {
 
   // Декодируем тело запроса
   var requestData struct {
-    ID   int                      `json:"id"`
-    Name string                   `json:"name"`
-    Items []models.ComparisonItem `json:"items"`
+    ID                   int                      `json:"id"`
+    Name                 string                   `json:"name"`
+    Items                []models.ComparisonItem  `json:"items"`
+    PriceRatingWeight    int                      `json:"price_rating_weight"`
+    ProsConsRatingWeight int                      `json:"pros_cons_rating_weight"`
   }
   if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
     middleware.SendError(w, "Invalid request body", http.StatusBadRequest)
@@ -97,10 +105,12 @@ func UpdateComparisonCollectionHandler(w http.ResponseWriter, r *http.Request) {
 
   // Создаем объект коллекции
   collection := models.ComparisonCollection{
-    ID:      requestData.ID,
-    UserID:  userID,
-    Name:    requestData.Name,
-    Items:   requestData.Items,
+    ID:                   requestData.ID,
+    UserID:               userID,
+    Name:                 requestData.Name,
+    Items:                requestData.Items,
+    PriceRatingWeight:    requestData.PriceRatingWeight,
+    ProsConsRatingWeight: requestData.ProsConsRatingWeight,
   }
 
   // Обновляем коллекцию в базе данных

@@ -270,7 +270,19 @@
             <div class="comparison-card-stat-value comparison-card-stat-value-rating">
               {{ item.rating?.toFixed(1) || '—' }}
             </div>
-            <div class="comparison-card-stat-label">рейтинг</div>
+            <div class="comparison-card-stat-label">общий рейтинг</div>
+          </div>
+          <div>
+            <div class="comparison-card-stat-value comparison-card-stat-value-price">
+              {{ item.priceRating?.toFixed(1) || '—' }}
+            </div>
+            <div class="comparison-card-stat-label">рейтинг цены</div>
+          </div>
+          <div>
+            <div class="comparison-card-stat-value comparison-card-stat-value-pros-cons">
+              {{ item.prosConsRating?.toFixed(1) || '—' }}
+            </div>
+            <div class="comparison-card-stat-label">рейтинг плюсов/минусов</div>
           </div>
         </div>
       </div>
@@ -581,7 +593,16 @@ export default {
       
       const finalRating = Math.max(0, Math.min(RATING_CONFIG.MAX_RATING, baseRating + priceImpact + prosConsImpact))
       
-      return { ...itemData, rating: Math.round(finalRating * 10) / 10 }
+      // Добавляем отдельные рейтинги
+      const priceRating = Math.max(0, Math.min(100, 50 + priceImpact));
+      const prosConsRating = Math.max(0, Math.min(100, 50 + prosConsImpact));
+      
+      return { 
+        ...itemData, 
+        rating: Math.round(finalRating * 10) / 10,
+        priceRating: Math.round(priceRating * 10) / 10,
+        prosConsRating: Math.round(prosConsRating * 10) / 10
+      }
     }
 
     return {
@@ -1009,7 +1030,7 @@ export default {
 
 .comparison-card-stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.75rem;
   text-align: center;
 }
@@ -1030,6 +1051,14 @@ export default {
 
 .comparison-card-stat-value-rating {
   color: #2563eb; /* blue-600 */
+}
+
+.comparison-card-stat-value-price {
+  color: #f59e0b; /* amber-500 */
+}
+
+.comparison-card-stat-value-pros-cons {
+  color: #8b5cf6; /* violet-500 */
 }
 
 .comparison-card-stat-label {

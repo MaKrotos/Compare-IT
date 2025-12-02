@@ -14,8 +14,8 @@ import (
 // CreateComparisonCollection создает новую коллекцию сравнений
 func CreateComparisonCollection(collection *models.ComparisonCollection) error {
 	query := `
-		INSERT INTO comparison_collections (user_id, name, items, public_link)
-		VALUES ($1, $2, $3, NULL)
+		INSERT INTO comparison_collections (user_id, name, items, public_link, price_rating_weight, pros_cons_rating_weight)
+		VALUES ($1, $2, $3, NULL, $4, $5)
 		RETURNING id, created_at, updated_at
 	`
 
@@ -31,6 +31,8 @@ func CreateComparisonCollection(collection *models.ComparisonCollection) error {
 		collection.UserID,
 		collection.Name,
 		itemsJSON,
+		collection.PriceRatingWeight,
+		collection.ProsConsRatingWeight,
 	).Scan(&id, &createdAt, &updatedAt)
 
 	if err != nil {
@@ -47,7 +49,7 @@ func CreateComparisonCollection(collection *models.ComparisonCollection) error {
 // GetComparisonCollectionByID получает коллекцию сравнений по ID
 func GetComparisonCollectionByID(collectionID, userID int) (*models.ComparisonCollection, error) {
 	query := `
-		SELECT id, user_id, name, items, public_link, created_at, updated_at
+		SELECT id, user_id, name, items, public_link, price_rating_weight, pros_cons_rating_weight, created_at, updated_at
 		FROM comparison_collections
 		WHERE id = $1 AND user_id = $2
 	`
@@ -63,6 +65,8 @@ func GetComparisonCollectionByID(collectionID, userID int) (*models.ComparisonCo
 		&collection.Name,
 		&itemsJSON,
 		&publicLink,
+		&collection.PriceRatingWeight,
+		&collection.ProsConsRatingWeight,
 		&createdAt,
 		&updatedAt,
 	)
@@ -93,7 +97,7 @@ func GetComparisonCollectionByID(collectionID, userID int) (*models.ComparisonCo
 // GetComparisonCollectionsByUserID получает все коллекции сравнений пользователя
 func GetComparisonCollectionsByUserID(userID int) ([]models.ComparisonCollection, error) {
 	query := `
-		SELECT id, user_id, name, items, public_link, created_at, updated_at
+		SELECT id, user_id, name, items, public_link, price_rating_weight, pros_cons_rating_weight, created_at, updated_at
 		FROM comparison_collections
 		WHERE user_id = $1
 		ORDER BY created_at DESC
@@ -119,6 +123,8 @@ func GetComparisonCollectionsByUserID(userID int) ([]models.ComparisonCollection
 			&collection.Name,
 			&itemsJSON,
 			&publicLink,
+			&collection.PriceRatingWeight,
+			&collection.ProsConsRatingWeight,
 			&createdAt,
 			&updatedAt,
 		)
@@ -166,8 +172,8 @@ func UpdateComparisonCollection(collection *models.ComparisonCollection) error {
 	
 	query := `
 		UPDATE comparison_collections
-		SET name = $1, items = $2, public_link = $3, updated_at = CURRENT_TIMESTAMP
-		WHERE id = $4 AND user_id = $5
+		SET name = $1, items = $2, public_link = $3, price_rating_weight = $4, pros_cons_rating_weight = $5, updated_at = CURRENT_TIMESTAMP
+		WHERE id = $6 AND user_id = $7
 	`
 
 	itemsJSON, err := json.Marshal(collection.Items)
@@ -179,6 +185,8 @@ func UpdateComparisonCollection(collection *models.ComparisonCollection) error {
 		collection.Name,
 		itemsJSON,
 		publicLink, // Используем сохраненную публичную ссылку
+		collection.PriceRatingWeight,
+		collection.ProsConsRatingWeight,
 		collection.ID,
 		collection.UserID,
 	)
@@ -323,7 +331,7 @@ func RemovePublicLink(collectionID int) error {
 func GetComparisonCollectionByPublicLink(publicLink string) (*models.ComparisonCollection, error) {
 	// Сначала пытаемся найти коллекцию по точному совпадению ссылки
 	query := `
-		SELECT id, user_id, name, items, public_link, created_at, updated_at
+		SELECT id, user_id, name, items, public_link, price_rating_weight, pros_cons_rating_weight, created_at, updated_at
 		FROM comparison_collections
 		WHERE public_link = $1
 	`
@@ -339,6 +347,8 @@ func GetComparisonCollectionByPublicLink(publicLink string) (*models.ComparisonC
 		&collection.Name,
 		&itemsJSON,
 		&publicLinkValue,
+		&collection.PriceRatingWeight,
+		&collection.ProsConsRatingWeight,
 		&createdAt,
 		&updatedAt,
 	)
@@ -347,7 +357,7 @@ func GetComparisonCollectionByPublicLink(publicLink string) (*models.ComparisonC
 		if err == sql.ErrNoRows {
 			// Пытаемся найти коллекцию, у которой ссылка совпадает с концом переданной строки
 			query = `
-				SELECT id, user_id, name, items, public_link, created_at, updated_at
+				SELECT id, user_id, name, items, public_link, price_rating_weight, pros_cons_rating_weight, created_at, updated_at
 				FROM comparison_collections
 				WHERE public_link = $1 OR $1 LIKE '%' || public_link
 			`
@@ -358,6 +368,8 @@ func GetComparisonCollectionByPublicLink(publicLink string) (*models.ComparisonC
 				&collection.Name,
 				&itemsJSON,
 				&publicLinkValue,
+				&collection.PriceRatingWeight,
+				&collection.ProsConsRatingWeight,
 				&createdAt,
 				&updatedAt,
 			)
