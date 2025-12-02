@@ -1,10 +1,17 @@
 <template>
-  <router-view />
+  <TelegramAuth>
+    <router-view />
+  </TelegramAuth>
 </template>
 
 <script>
+import TelegramAuth from '@/components/TelegramAuth.vue'
+
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    TelegramAuth
+  }
 }
 </script>
 

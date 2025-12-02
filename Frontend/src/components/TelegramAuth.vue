@@ -36,10 +36,11 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import Button from '@/components/ui/Button.vue'
 import { Lock, LogIn, Loader2 } from 'lucide-vue-next'
+import { isAuthenticated, isLoading, error, loginWithTelegram, initAuth } from '@/utils/auth'
 
 export default {
   name: 'TelegramAuth',
@@ -51,99 +52,11 @@ export default {
   },
   setup() {
     const route = useRoute()
-    const isAuthenticated = ref(false)
-    const isLoading = ref(false)
-    const error = ref(null)
-    
-    // Проверка, является ли текущий маршрут публичным
-    const isPublicRoute = route.name === 'PublicCollection'
     
     // Проверка авторизации при монтировании
     onMounted(() => {
-      // Для публичных маршрутов пропускаем авторизацию
-      if (isPublicRoute) {
-        isAuthenticated.value = true
-        return
-      }
-      
-      checkAuthStatus()
-      // Попытка автоматической авторизации только если пользователь еще не авторизован
-      if (window.Telegram?.WebApp && !isAuthenticated.value) {
-        loginWithTelegram()
-      }
+      initAuth(route)
     })
-    
-    // Проверка статуса авторизации
-    const checkAuthStatus = () => {
-      const token = localStorage.getItem('auth_token')
-      isAuthenticated.value = !!token
-    }
-    
-    // Авторизация через Telegram
-    const loginWithTelegram = async () => {
-      try {
-        console.log('Попытка авторизации через Telegram...')
-        isLoading.value = true
-        error.value = null
-        
-        // Проверяем, что Telegram Web App доступен
-        if (!window.Telegram || !window.Telegram.WebApp) {
-          throw new Error('Telegram Web App не доступен. Откройте приложение через Telegram.')
-        }
-        
-        const webApp = window.Telegram.WebApp
-        webApp.ready()
-        console.log('Telegram Web App готов')
-        
-        // Получаем initData
-        const initData = webApp.initData
-        console.log('Init data получены:', initData ? 'есть' : 'нет')
-        
-        // Проверяем, что initData не пустая
-        if (!initData) {
-          throw new Error('Нет данных для авторизации. Откройте приложение через Telegram.')
-        }
-        
-        console.log('Отправка данных авторизации на сервер...')
-        // Отправляем данные на сервер для проверки
-        const response = await fetch('/api/auth/telegram', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ initData })
-        })
-        
-        console.log('Ответ от сервера:', response.status, response.statusText)
-        
-        if (!response.ok) {
-          const errorText = await response.text()
-          console.error('Ошибка авторизации от сервера:', errorText)
-          throw new Error(`Ошибка авторизации: ${response.status} - ${errorText}`)
-        }
-        
-        const data = await response.json()
-        console.log('Успешная авторизация:', data)
-        
-        // Сохраняем токен в localStorage
-        localStorage.setItem('auth_token', data.token)
-        
-        // Обновляем статус авторизации
-        isAuthenticated.value = true
-        
-        // Не перезагружаем страницу, чтобы избежать бесконечного перерендеринга
-        // window.location.reload()
-      } catch (error) {
-        console.error('Ошибка авторизации:', error)
-        error.value = error.message
-        // Не показываем alert при автоматической авторизации
-        if (!window.Telegram?.WebApp) {
-          alert('Ошибка авторизации: ' + error.message)
-        }
-      } finally {
-        isLoading.value = false
-      }
-    }
     
     return {
       isAuthenticated,

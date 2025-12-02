@@ -161,6 +161,7 @@ import AddLinkForm from '@/components/comparison/AddLinkForm.vue'
 import ComparisonCard from '@/components/comparison/ComparisonCard.vue'
 import { Scale, Loader2, Download, Upload, FolderOpen, Save, Link, Link2, Copy } from 'lucide-vue-next'
 import { getComparisonCollectionById } from '@/utils/comparisons.js'
+import { getToken } from '@/utils/auth'
 import { generatePublicLink, removePublicLink } from '@/utils/collections.js'
 
 export default {
@@ -241,7 +242,7 @@ export default {
           
           if (collectionId && isCollectionLoaded) {
             // Отправляем коллекцию на сервер
-            const token = localStorage.getItem('auth_token');
+            const token = getToken();
             if (!token) {
               console.log('Пользователь не авторизован, автосохранение отключено');
               return;
@@ -600,7 +601,7 @@ export default {
         const collectionId = route.query.collectionId;
         
         // Отправляем коллекцию на сервер
-        const token = localStorage.getItem('auth_token');
+        const token = getToken();
         if (!token) {
           alert('Для сохранения коллекции необходимо авторизоваться');
           return;

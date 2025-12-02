@@ -1,3 +1,5 @@
+import { getToken } from './auth.js';
+
 /**
  * Утилиты для работы с коллекциями сравнений через API
  */
@@ -10,7 +12,7 @@ const API_BASE_URL = '/backend';
  */
 function getAuthToken() {
   // В реальном приложении токен будет сохраняться после аутентификации
-  return localStorage.getItem('auth_token');
+  return getToken();
 }
 
 /**
