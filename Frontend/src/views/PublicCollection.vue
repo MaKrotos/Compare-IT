@@ -23,7 +23,7 @@
           <div class="public-collection-message-text">
             <p class="public-collection-message-title">Публичный доступ</p>
             <p class="public-collection-message-description">
-              Эта коллекция доступна для просмотра без авторизации. 
+              Эта коллекция доступна для просмотра без авторизации.
               Для редактирования коллекции необходимо авторизоваться.
             </p>
           </div>
@@ -45,9 +45,13 @@
         </div>
       </div>
       <div v-else class="public-collection-items">
-        <transition-group name="public-collection-list" tag="div" class="public-collection-items-grid">
+        <transition-group
+          name="public-collection-list"
+          tag="div"
+          class="public-collection-items-grid"
+        >
           <div
-            v-for="(item, index) in items"
+            v-for="item in items"
             :key="`item-${item.id}`"
             class="public-collection-item-container"
           >
@@ -89,6 +93,7 @@ export default {
     const loadPublicCollection = async () => {
       try {
         // При обновлении не показываем индикатор загрузки
+        const wasLoading = isLoading.value;
         if (items.value.length > 0) {
           isLoading.value = false
         } else {
@@ -108,17 +113,7 @@ export default {
         const newItems = collection.items || []
         
         // Проверяем, изменились ли данные
-        let hasChanges = oldItems.length !== newItems.length
-        
-        if (!hasChanges) {
-          // Поэлементное сравнение
-          for (let i = 0; i < oldItems.length; i++) {
-            if (JSON.stringify(oldItems[i]) !== JSON.stringify(newItems[i])) {
-              hasChanges = true
-              break
-            }
-          }
-        }
+        const hasChanges = JSON.stringify(oldItems) !== JSON.stringify(newItems);
         
         // Обновляем только если данные действительно изменились
         if (hasChanges) {
@@ -129,6 +124,9 @@ export default {
       } catch (err) {
         console.error('Ошибка при загрузке публичной коллекции:', err)
         error.value = err.message || 'Не удалось загрузить коллекцию'
+        
+        // Показываем ошибку пользователю (в реальном приложении можно использовать toast-уведомления)
+        // Например: showToast('error', error.value)
       } finally {
         isLoading.value = false
       }

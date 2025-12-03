@@ -53,102 +53,24 @@
         </div>
       </div>
       <div v-else class="collections-grid">
-        <div
+        <CollectionCard
           v-for="collection in collections"
           :key="collection.id"
-          class="collection-card"
-        >
-          <div class="collection-card-content">
-            <div class="collection-card-header">
-              <div class="collection-card-info">
-                <h3 class="collection-card-title">
-                  {{ collection.name || 'Без названия' }}
-                </h3>
-                <p class="collection-card-date">
-                  Создана: {{ formatDate(collection.created_at) }}
-                </p>
-                <div v-if="collection.public_link" class="collection-card-link-indicator">
-                  <Link class="collection-card-link-icon" />
-                  <span class="collection-card-link-text">Публичная ссылка создана</span>
-                </div>
-              </div>
-              <div class="collection-card-actions">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  @click="editCollection(collection)"
-                  class="collection-card-action collection-card-edit"
-                >
-                  <Edit3 class="collection-card-action-icon" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  @click="togglePublicLink(collection)"
-                  class="collection-card-action collection-card-link"
-                >
-                  <component :is="collection.public_link ? 'Link' : 'Link2'" class="collection-card-action-icon" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  @click="togglePinCollection(collection)"
-                  :class="['collection-card-action', 'collection-card-pin', collection.is_pinned ? 'collection-card-pinned' : 'collection-card-unpinned']"
-                >
-                  <component :is="collection.is_pinned ? 'Bookmark' : 'BookmarkPlus'" class="collection-card-action-icon" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  @click="deleteCollection(collection.id)"
-                  class="collection-card-action collection-card-delete"
-                >
-                  <Trash2 class="collection-card-action-icon" />
-                </Button>
-              </div>
-            </div>
-            <div class="collection-card-footer">
-              <Button
-                @click="openCollection(collection)"
-                class="collection-card-open-button"
-              >
-                Открыть
-              </Button>
-            </div>
-          </div>
-        </div>
+          :collection="collection"
+          @edit="editCollection"
+          @delete="deleteCollection"
+          @toggle-public-link="togglePublicLink"
+          @toggle-pin="togglePinCollection"
+          @open="openCollection"
+        />
       </div>
 
       <!-- Модальное окно для создания/редактирования подборки -->
-      <Dialog v-model:open="showCollectionDialog" @open-change="onDialogOpenChange">
-        <DialogContent class="collection-dialog">
-          <DialogHeader>
-            <DialogTitle class="collection-dialog-title">{{ editingCollection ? 'Редактировать подборку' : 'Создать подборку' }}</DialogTitle>
-          </DialogHeader>
-          <div class="collection-dialog-content">
-            <div class="collection-form">
-              <div>
-                <label class="collection-form-label">
-                  Название подборки
-                </label>
-                <Input
-                  v-model="collectionForm.name"
-                  placeholder="Введите название подборки"
-                  class="collection-form-input"
-                  @focus="$event.target.select()"
-                  ref="collectionNameInput"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="collection-dialog-footer">
-            <Button variant="outline" @click="showCollectionDialog = false" class="collection-dialog-cancel">Отмена</Button>
-            <Button @click="saveCollection" class="collection-dialog-save">
-              {{ editingCollection ? 'Сохранить' : 'Создать' }}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CollectionDialog
+        v-model:open="showCollectionDialog"
+        :editing-collection="editingCollection"
+        @save="saveCollection"
+      />
     </div>
   </div>
 </template>
@@ -156,36 +78,24 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import Dialog from '@/components/ui/Dialog.vue'
-import DialogContent from '@/components/ui/DialogContent.vue'
-import DialogHeader from '@/components/ui/DialogHeader.vue'
-import DialogTitle from '@/components/ui/DialogTitle.vue'
+import CollectionCard from '@/components/collections/CollectionCard.vue'
+import CollectionDialog from '@/components/collections/CollectionDialog.vue'
 import Button from '@/components/ui/Button.vue'
-import Input from '@/components/ui/Input.vue'
-import { Folder, FolderOpen, Plus, Loader2, Edit3, Trash2, Bookmark, BookmarkPlus, Scale, Link, Link2 } from 'lucide-vue-next'
+import { Folder, FolderOpen, Plus, Loader2, Scale } from 'lucide-vue-next'
 import { getComparisonCollections, createComparisonCollection, updateComparisonCollection, deleteComparisonCollection } from '@/utils/comparisons.js'
 import { generatePublicLink, removePublicLink } from '@/utils/collections.js'
 
 export default {
   name: 'CollectionsView',
   components: {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+    CollectionCard,
+    CollectionDialog,
     Button,
-    Input,
     Folder,
     FolderOpen,
     Plus,
     Loader2,
-    Edit3,
-    Trash2,
-    Bookmark,
-    BookmarkPlus,
-    Scale,
-    Link,
-    Link2
+    Scale
   },
   setup() {
     const router = useRouter()
@@ -193,28 +103,11 @@ export default {
     const isLoading = ref(true)
     const showCollectionDialog = ref(false)
     const editingCollection = ref(null)
-    const collectionForm = ref({
-      name: ''
-    })
-    const collectionNameInput = ref(null)
 
     // Загрузка подборок при монтировании
     onMounted(async () => {
       await loadCollections()
     })
-
-    // Обработчик открытия/закрытия диалога
-    const onDialogOpenChange = (open) => {
-      showCollectionDialog.value = open
-      if (open) {
-        // Фокус на поле ввода при открытии диалога
-        setTimeout(() => {
-          if (collectionNameInput.value) {
-            collectionNameInput.value.focus()
-          }
-        }, 100)
-      }
-    }
 
     // Загрузка подборок
     const loadCollections = async () => {
@@ -240,31 +133,29 @@ export default {
     // Создание новой подборки
     const createNewCollection = () => {
       editingCollection.value = null
-      collectionForm.value = { name: '' }
       showCollectionDialog.value = true
     }
 
     // Редактирование подборки
     const editCollection = (collection) => {
       editingCollection.value = collection
-      collectionForm.value = { name: collection.name }
       showCollectionDialog.value = true
     }
 
     // Сохранение подборки
-    const saveCollection = async () => {
+    const saveCollection = async (collectionData) => {
       try {
         if (editingCollection.value) {
           // Обновление существующей подборки
           const updatedCollection = {
             ...editingCollection.value,
-            name: collectionForm.value.name
+            name: collectionData.name
           }
           await updateComparisonCollection(updatedCollection)
         } else {
           // Создание новой подборки
           const newCollection = {
-            name: collectionForm.value.name,
+            name: collectionData.name,
             items: []
           }
           await createComparisonCollection(newCollection)
@@ -364,23 +255,11 @@ export default {
       router.push('/compare')
     }
 
-    // Форматирование даты
-    const formatDate = (dateString) => {
-      if (!dateString) return '';
-      const date = new Date(dateString)
-      return date.toLocaleDateString('ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      })
-    }
-
     return {
       collections,
       isLoading,
       showCollectionDialog,
       editingCollection,
-      collectionForm,
       loadCollections,
       createNewCollection,
       editCollection,
@@ -389,8 +268,7 @@ export default {
       togglePinCollection,
       togglePublicLink,
       openCollection,
-      goToComparison,
-      formatDate
+      goToComparison
     }
   }
 }

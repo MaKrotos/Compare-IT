@@ -8,6 +8,8 @@ const API_BASE_URL = '/backend';
 /**
  * Получает токен авторизации из localStorage
  */
+import { getToken } from './auth.js';
+
 function getAuthToken() {
   // В реальном приложении токен будет сохраняться после аутентификации
   return getToken();

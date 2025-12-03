@@ -14,42 +14,22 @@
     <CardContent class="rating-controls-content">
       <div class="rating-controls-sliders">
         <!-- Слайдер для рейтинга цены -->
-        <div class="rating-control-group">
-          <div class="rating-control-label">
-            <DollarSign class="rating-control-icon rating-control-price-icon" />
-            <span class="rating-control-label-text">Рейтинг цены</span>
-          </div>
-          <div class="rating-control-slider-container">
-            <Slider
-              :model-value="[priceRatingWeight]"
-              @update:model-value="updatePriceRatingWeight"
-              :min="0"
-              :max="100"
-              :step="1"
-              class="rating-control-slider"
-            />
-            <span class="rating-control-value">{{ priceRatingWeight }} баллов</span>
-          </div>
-        </div>
+        <RatingSlider
+          :model-value="priceRatingWeight"
+          @update:model-value="updatePriceRatingWeight"
+          :icon="DollarSign"
+          label="Рейтинг цены"
+          icon-class="rating-control-price-icon"
+        />
 
         <!-- Слайдер для рейтинга плюсов/минусов -->
-        <div class="rating-control-group">
-          <div class="rating-control-label">
-            <ThumbsUp class="rating-control-icon rating-control-pros-icon" />
-            <span class="rating-control-label-text">Рейтинг плюсов/минусов</span>
-          </div>
-          <div class="rating-control-slider-container">
-            <Slider
-              :model-value="[prosConsRatingWeight]"
-              @update:model-value="updateProsConsRatingWeight"
-              :min="0"
-              :max="100"
-              :step="1"
-              class="rating-control-slider"
-            />
-            <span class="rating-control-value">{{ prosConsRatingWeight }} баллов</span>
-          </div>
-        </div>
+        <RatingSlider
+          :model-value="prosConsRatingWeight"
+          @update:model-value="updateProsConsRatingWeight"
+          :icon="ThumbsUp"
+          label="Рейтинг плюсов/минусов"
+          icon-class="rating-control-pros-icon"
+        />
 
         <!-- Кнопка сохранения -->
         <Button
@@ -71,8 +51,8 @@ import CardContent from '@/components/ui/CardContent.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
 import Button from '@/components/ui/Button.vue'
-import Slider from '@/components/ui/Slider.vue'
 import { Settings, DollarSign, ThumbsUp, Save } from 'lucide-vue-next'
+import RatingSlider from './RatingSlider.vue'
 
 export default {
   name: 'RatingControls',
@@ -82,11 +62,11 @@ export default {
     CardHeader,
     CardTitle,
     Button,
-    Slider,
     Settings,
     DollarSign,
     ThumbsUp,
-    Save
+    Save,
+    RatingSlider
   },
   props: {
     initialPriceWeight: {
@@ -117,12 +97,12 @@ export default {
 
     // Обновление веса рейтинга цены
     const updatePriceRatingWeight = (value) => {
-      priceRatingWeight.value = value[0]
+      priceRatingWeight.value = value
     }
 
     // Обновление веса рейтинга плюсов/минусов
     const updateProsConsRatingWeight = (value) => {
-      prosConsRatingWeight.value = value[0]
+      prosConsRatingWeight.value = value
     }
 
     // Сохранение настроек рейтингов
@@ -199,57 +179,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-}
-
-.rating-control-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.rating-control-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.rating-control-icon {
-  width: 1rem;
-  height: 1rem;
-}
-
-.rating-control-price-icon {
-  color: #f59e0b; /* amber-500 */
-}
-
-.rating-control-pros-icon {
-  color: #8b5cf6; /* violet-500 */
-}
-
-.rating-control-label-text {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 500;
-  color: #374151;
-}
-
-.rating-control-slider-container {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.rating-control-slider {
-  flex: 1;
-}
-
-.rating-control-value {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
-  min-width: 3rem;
-  text-align: right;
 }
 
 .rating-controls-save-button {
