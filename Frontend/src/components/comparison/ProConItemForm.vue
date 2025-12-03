@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import { Check, X } from 'lucide-vue-next'
@@ -42,20 +42,41 @@ export default {
     isPro: {
       type: Boolean,
       required: true
+    },
+    type: {
+      type: String,
+      default: 'pro'
+    },
+    newItem: {
+      type: String,
+      default: ''
     }
   },
-  emits: ['add', 'cancel'],
+  emits: ['update:newItem', 'add', 'cancel'],
   setup(props, { emit }) {
-    const newItem = ref('')
+    const newItem = ref(props.newItem || '')
 
     const addItem = () => {
-      console.log('addItem called')
-      console.log('newItem.value:', newItem.value)
-      if (newItem.value.trim()) {
-        emit('add', newItem.value.trim())
-        newItem.value = ''
-      }
-    }
+     console.log('addItem called')
+     console.log('newItem.value:', newItem.value)
+     if (newItem.value && newItem.value.trim()) {
+       emit('add', newItem.value.trim())
+       newItem.value = ''
+     }
+   }
+
+   // Добавим watch для отслеживания изменений newItem
+   watch(newItem, (newVal) => {
+     console.log('newItem changed:', newVal)
+     emit('update:newItem', newVal)
+   })
+
+   // Добавим watch для props.newItem
+   watch(() => props.newItem, (newVal) => {
+     if (newVal !== undefined) {
+       newItem.value = newVal
+     }
+   })
 
     const cancelAdd = () => {
       newItem.value = ''

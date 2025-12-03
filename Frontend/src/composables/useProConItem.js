@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 /**
  * Композабл для управления логикой элементов "Плюсы/Минусы"
@@ -8,6 +8,11 @@ export function useProConItem(props) {
   const isAdding = ref(false)
   const isPro = computed(() => props.type === 'pro')
   const hoveredItem = ref(null)
+
+  // Добавим watch для отслеживания изменений newItem
+  watch(newItem, (newVal) => {
+    console.log('newItem changed in composable:', newVal)
+  })
 
   /**
    * Получает класс для бейджа влияния в зависимости от значения
@@ -28,16 +33,23 @@ export function useProConItem(props) {
    * Добавляет новый элемент
    */
   const addItem = () => {
-    console.log('addItem called')
-    console.log('newItem.value:', newItem.value)
-    if (newItem.value.trim()) {
-      const newItems = [...props.items, { text: newItem.value.trim(), impact: 5 }]
-      console.log('Adding item:', newItems)
-      props.onUpdate(newItems)
-      newItem.value = ''
-      isAdding.value = false
-    }
-  }
+   console.log('addItem called')
+   console.log('newItem.value:', newItem.value)
+   if (newItem.value && newItem.value.trim()) {
+     const newItemObj = { text: newItem.value.trim() };
+     
+     // Добавляем поле влияния только для плюсов и минусов, но не для заметок
+     if (props.type !== 'note') {
+       newItemObj.impact = 5;
+     }
+     
+     const newItems = [...props.items, newItemObj];
+     console.log('Adding item:', newItems)
+     props.onUpdate(newItems)
+     newItem.value = ''
+     isAdding.value = false
+   }
+ }
 
   /**
    * Удаляет элемент по индексу

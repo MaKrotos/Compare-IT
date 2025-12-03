@@ -30,6 +30,7 @@
           @mouseenter="() => setHoveredItem(index)"
           @mouseleave="() => setHoveredItem(null)"
           class="pro-con-item-card-wrapper"
+          :class="{ 'pro-con-item-card-note': type === 'note' }"
         />
       </transition-group>
     </div>
@@ -38,6 +39,9 @@
       <ProConItemForm
         v-if="isAdding"
         :is-pro="isPro"
+        :type="type"
+        :new-item="newItem"
+        @update:new-item="val => newItem = val"
         @add="addItem"
         @cancel="cancelAdd"
       />
@@ -81,6 +85,7 @@ export default {
   },
   setup(props) {
     const {
+      newItem,
       isAdding,
       isPro,
       hoveredItem,
@@ -93,6 +98,7 @@ export default {
     } = useProConItem(props)
 
     return {
+      newItem,
       isAdding,
       isPro,
       hoveredItem,

@@ -10,13 +10,14 @@
         <div class="pro-con-item-text-content">
           <p class="pro-con-item-text">{{ item.text }}</p>
           <Badge
+            v-if="item.impact !== undefined"
             variant="outline"
             :class="['pro-con-item-impact-badge', getImpactClass(item.impact || 5)]"
           >
             {{ item.impact || 5 }}/10
           </Badge>
         </div>
-        <div class="pro-con-item-slider-container" :class="{ 'pro-con-item-slider-container-open': isHovered }">
+        <div v-if="item.impact !== undefined && !readonly" class="pro-con-item-slider-container" :class="{ 'pro-con-item-slider-container-open': isHovered }">
           <div class="pro-con-item-slider-content">
             <div class="pro-con-item-slider-header">
               <div class="pro-con-item-slider-label">
@@ -128,6 +129,15 @@ export default {
   padding: 0.5rem;
   border-radius: 0.375rem;
   border: 1px solid;
+}
+
+.pro-con-item-card-note {
+  background-color: rgba(243, 244, 246, 0.3); /* gray-100 with 30% opacity */
+  border-color: #e5e7eb; /* gray-200 */
+}
+
+.pro-con-item-card-note .pro-con-item-bullet {
+  background-color: #9ca3af; /* gray-400 */
 }
 
 .pro-con-item-card-pro {
