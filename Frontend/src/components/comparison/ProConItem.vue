@@ -1,15 +1,15 @@
 <template>
   <div class="pro-con-item-container">
     <div class="pro-con-item-header">
-      <h4 :class="['pro-con-item-title', isPro ? 'pro-con-item-title-pro' : 'pro-con-item-title-con']">
-        {{ isPro ? 'Плюсы' : 'Минусы' }}
+      <h4 :class="['pro-con-item-title', type === 'pro' ? 'pro-con-item-title-pro' : type === 'con' ? 'pro-con-item-title-con' : 'pro-con-item-title-note']">
+        {{ type === 'pro' ? 'Плюсы' : type === 'con' ? 'Минусы' : 'Заметки' }}
       </h4>
       <Button
         v-if="!isAdding && !readonly"
         variant="ghost"
         size="sm"
         @click="isAdding = true"
-        :class="['pro-con-item-add-button', isPro ? 'pro-con-item-add-button-pro' : 'pro-con-item-add-button-con']"
+        :class="['pro-con-item-add-button', type === 'pro' ? 'pro-con-item-add-button-pro' : type === 'con' ? 'pro-con-item-add-button-con' : 'pro-con-item-add-button-note']"
       >
         <Plus class="pro-con-item-add-icon" />
         Добавить
@@ -23,6 +23,7 @@
           :key="index"
           :item="item"
           :is-pro="isPro"
+          :type="type"
           :readonly="readonly"
           :is-hovered="hoveredItem === index"
           @remove="() => removeItem(index)"
@@ -140,6 +141,10 @@ export default {
   color: #b91c1c; /* red-700 */
 }
 
+.pro-con-item-title-note {
+  color: #6b7280; /* gray-500 */
+}
+
 .pro-con-item-add-button {
   height: 1.75rem;
   font-size: 0.75rem;
@@ -168,6 +173,16 @@ export default {
 
 .pro-con-item-add-button-con:hover {
   background-color: #fee2e2; /* red-100 */
+}
+
+.pro-con-item-add-button-note {
+  background-color: #f9fafb !important; /* gray-50 */
+  color: #6b7280 !important; /* gray-500 */
+  border: 1px solid #f3f4f6 !important; /* gray-100 */
+}
+
+.pro-con-item-add-button-note:hover {
+  background-color: #f3f4f6 !important; /* gray-100 */
 }
 
 .pro-con-item-add-icon {

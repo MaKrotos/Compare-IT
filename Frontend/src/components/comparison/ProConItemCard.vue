@@ -1,11 +1,11 @@
 <template>
   <div
-    :class="['pro-con-item-card', isPro ? 'pro-con-item-card-pro' : 'pro-con-item-card-con']"
+    :class="['pro-con-item-card', isPro ? 'pro-con-item-card-pro' : (type === 'note' ? 'pro-con-item-card-note' : 'pro-con-item-card-con')]"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
   >
     <div class="pro-con-item-content">
-      <div :class="['pro-con-item-bullet', isPro ? 'pro-con-item-bullet-pro' : 'pro-con-item-bullet-con']" />
+      <div :class="['pro-con-item-bullet', type === 'note' ? 'pro-con-item-bullet-note' : (isPro ? 'pro-con-item-bullet-pro' : 'pro-con-item-bullet-con')]" />
       <div class="pro-con-item-text-container">
         <div class="pro-con-item-text-content">
           <p class="pro-con-item-text">{{ item.text }}</p>
@@ -132,12 +132,20 @@ export default {
 }
 
 .pro-con-item-card-note {
-  background-color: rgba(243, 244, 246, 0.3); /* gray-100 with 30% opacity */
-  border-color: #e5e7eb; /* gray-200 */
+  background-color: rgba(249, 250, 251, 0.3) !important; /* gray-50 with 30% opacity */
+  border-color: #f3f4f6 !important; /* gray-100 */
 }
 
-.pro-con-item-card-note .pro-con-item-bullet {
-  background-color: #9ca3af; /* gray-400 */
+.pro-con-item-bullet-note {
+  background-color: #9ca3af !important; /* gray-400 */
+}
+
+div .pro-con-item-bullet-note {
+  background-color: #9ca3af !important; /* gray-400 */
+}
+
+.pro-con-item-card-note .pro-con-item-bullet-note {
+  background-color: #9ca3af !important; /* gray-400 */
 }
 
 .pro-con-item-card-pro {

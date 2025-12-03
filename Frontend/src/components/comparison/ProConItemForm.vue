@@ -2,7 +2,7 @@
   <div class="pro-con-item-add-container">
     <Input
       v-model="newItem"
-      :placeholder="isPro ? 'Введите плюс...' : 'Введите минус...'"
+      :placeholder="type === 'pro' ? 'Введите плюс...' : type === 'con' ? 'Введите минус...' : 'Введите заметку...'"
       class="pro-con-item-input"
       @keyup.enter="addItem"
     />

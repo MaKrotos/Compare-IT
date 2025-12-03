@@ -36,6 +36,13 @@
           :on-update="updateCons"
           :readonly="readonly"
         />
+        
+        <ProConItem
+          type="note"
+          :items="item.notes || []"
+          :on-update="updateNotes"
+          :readonly="readonly"
+        />
       </CardContent>
 
       <!-- Статистика -->
@@ -128,6 +135,11 @@ export default {
       props.onUpdate({ ...props.item, cons })
     }
     
+    // Обновить заметки
+    const updateNotes = (notes) => {
+      props.onUpdate({ ...props.item, notes })
+    }
+    
     return {
       isEditingImages,
       editingImages,
@@ -136,7 +148,8 @@ export default {
       saveImages,
       handleUpdate,
       updatePros,
-      updateCons
+      updateCons,
+      updateNotes
     }
   }
 }

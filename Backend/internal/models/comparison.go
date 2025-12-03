@@ -15,6 +15,7 @@ type ComparisonItem struct {
 	Currency       string   `json:"currency"`
 	Pros           []ProCon `json:"pros"`
 	Cons           []ProCon `json:"cons"`
+	Notes          []Note   `json:"notes"`
 	Rating         float64  `json:"rating"`
 	PriceRating    float64  `json:"priceRating"`
 	ProsConsRating float64  `json:"prosConsRating"`
@@ -25,6 +26,11 @@ type ComparisonItem struct {
 type ProCon struct {
 	Text   string `json:"text"`
 	Impact int    `json:"impact"`
+}
+
+// Note представляет заметку
+type Note struct {
+	Text string `json:"text"`
 }
 
 // ComparisonCollection представляет коллекцию сравнений пользователя
