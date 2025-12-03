@@ -1,22 +1,22 @@
-name: Backend Docker CI
+name: Frontend Docker CI
 
 on:
   push:
     branches: ["main"]
     paths:
-      - "Backend/**"
+      - "Frontend/**"
   pull_request:
     branches: ["main"]
     paths:
-      - "Backend/**"
+      - "Frontend/**"
   workflow_dispatch:
 
 jobs:
-  build-and-push-backend:
+  build-and-push-frontend:
     runs-on: ubuntu-latest
     if: |
       (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
-      !contains(github.event.head_commit.message, 'Frontend/')
+      !contains(github.event.head_commit.message, 'Backend/')
 
     steps:
       - name: Checkout code
@@ -41,23 +41,23 @@ jobs:
 
       - name: Build Docker image
         run: |
-          cd Backend
+          cd Frontend
           docker build -t ${{ secrets.REGISTRY_URL }}/makrotos/compareit-frontend:latest .
 
       - name: Push Docker image
         run: docker push ${{ secrets.REGISTRY_URL }}/makrotos/compareit-frontend:latest
 
-  test-backend:
+  test-frontend:
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'pull_request' &&
-      !contains(github.event.pull_request.head.sha, 'Frontend/')
+      !contains(github.event.pull_request.head.sha, 'Backend/')
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build Backend Docker image (test)
+      - name: Build Frontend Docker image (test)
         run: |
-          cd Backend
-          docker build -t compareit-backend:test .
+          cd Frontend
+          docker build -t compareit-frontend:test .
