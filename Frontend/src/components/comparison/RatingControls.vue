@@ -3,7 +3,7 @@
     <CardHeader class="rating-controls-header">
       <CardTitle class="rating-controls-title">
         <div class="rating-controls-icon-container">
-          <Settings class="w-5 h-5 text-blue-600" />
+          <Settings class="rating-controls-icon" />
         </div>
         Настройка рейтингов
       </CardTitle>
@@ -16,8 +16,8 @@
         <!-- Слайдер для рейтинга цены -->
         <div class="rating-control-group">
           <div class="rating-control-label">
-            <DollarSign class="w-4 h-4 text-amber-500" />
-            <span>Рейтинг цены</span>
+            <DollarSign class="rating-control-icon rating-control-price-icon" />
+            <span class="rating-control-label-text">Рейтинг цены</span>
           </div>
           <div class="rating-control-slider-container">
             <Slider
@@ -35,8 +35,8 @@
         <!-- Слайдер для рейтинга плюсов/минусов -->
         <div class="rating-control-group">
           <div class="rating-control-label">
-            <ThumbsUp class="w-4 h-4 text-violet-500" />
-            <span>Рейтинг плюсов/минусов</span>
+            <ThumbsUp class="rating-control-icon rating-control-pros-icon" />
+            <span class="rating-control-label-text">Рейтинг плюсов/минусов</span>
           </div>
           <div class="rating-control-slider-container">
             <Slider
@@ -56,7 +56,7 @@
           @click="saveRatingWeights"
           class="rating-controls-save-button"
         >
-          <Save class="w-4 h-4 mr-2" />
+          <Save class="rating-controls-save-icon" />
           Сохранить настройки
         </Button>
       </div>
@@ -145,9 +145,9 @@ export default {
 </script>
 
 <style scoped>
+/* Стили для компонента RatingControls */
 .rating-controls-container {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  background-color: #ffffff;
   background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(8px);
   border-radius: 1rem;
@@ -156,8 +156,7 @@ export default {
 }
 
 .rating-controls-header {
-  border-bottom-width: 1px;
-  border-color: #f3f4f6;
+  border-bottom: 1px solid #f3f4f6;
   padding-bottom: 1.25rem;
   background-image: linear-gradient(to right, rgba(219, 234, 254, 0.8), rgba(224, 231, 255, 0.8));
 }
@@ -176,7 +175,13 @@ export default {
 .rating-controls-icon-container {
   padding: 0.5rem;
   background-color: #dbeafe;
-  border-radius: 9999px;
+  border-radius: 50%;
+}
+
+.rating-controls-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #2563eb;
 }
 
 .rating-controls-subtitle {
@@ -206,6 +211,22 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.rating-control-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.rating-control-price-icon {
+  color: #f59e0b; /* amber-500 */
+}
+
+.rating-control-pros-icon {
+  color: #8b5cf6; /* violet-500 */
+}
+
+.rating-control-label-text {
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
@@ -239,6 +260,14 @@ export default {
   font-weight: 500;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .rating-controls-save-button:disabled {
@@ -247,10 +276,13 @@ export default {
 }
 
 .rating-controls-save-button:hover:not(:disabled) {
-  background-image: linear-gradient(to right, #2563eb, #2563eb);
+  background-color: #1d4ed8;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  transition-property: all;
-  transition-duration: 150ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rating-controls-save-icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
 }
 </style>

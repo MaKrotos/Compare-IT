@@ -1,116 +1,116 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="collections-view">
+    <div class="collections-container">
       <!-- Заголовок -->
-      <div class="text-center mb-12">
-        <div class="flex items-center justify-center gap-4 mb-4">
-          <div class="p-3 bg-blue-600 rounded-2xl">
-            <Folder class="w-8 h-8 text-white" />
+      <div class="collections-header">
+        <div class="collections-logo">
+          <div class="collections-logo-icon">
+            <Folder class="collections-logo-folder" />
           </div>
         </div>
-        <h1 class="text-4xl sm:text-5xl font-light tracking-tight text-gray-900 mb-3">
+        <h1 class="collections-title">
           Мои подборки
         </h1>
-        <p class="text-lg text-gray-600 font-light">
+        <p class="collections-subtitle">
           Управляйте своими коллекциями сравнений
         </p>
       </div>
 
       <!-- Кнопки управления -->
-      <div class="mb-8 text-center flex flex-wrap gap-4 justify-center">
+      <div class="collections-actions">
         <Button
           @click="createNewCollection"
-          class="gap-2 px-6 py-3 text-base font-medium bg-blue-600 hover:bg-blue-700"
+          class="collections-action-button collections-action-create"
         >
-          <Plus class="w-5 h-5" />
+          <Plus class="collections-action-icon" />
           Создать подборку
         </Button>
         <Button
           @click="goToComparison"
           variant="outline"
-          class="gap-2 px-6 py-3 text-base font-medium"
+          class="collections-action-button collections-action-compare"
         >
-          <Scale class="w-5 h-5" />
+          <Scale class="collections-action-icon" />
           Сравнить товары
         </Button>
       </div>
 
       <!-- Список подборок -->
-      <div v-if="isLoading" class="flex items-center justify-center py-20">
-        <Loader2 class="w-8 h-8 animate-spin text-blue-600" />
+      <div v-if="isLoading" class="collections-loading">
+        <Loader2 class="collections-loading-icon" />
       </div>
-      <div v-else-if="!collections || collections.length === 0" class="text-center py-20">
-        <div>
-          <div class="inline-block bg-gray-100 rounded-full mb-4">
-            <FolderOpen class="w-12 h-12 text-gray-400" />
+      <div v-else-if="!collections || collections.length === 0" class="collections-empty">
+        <div class="collections-empty-content">
+          <div class="collections-empty-icon">
+            <FolderOpen class="collections-empty-folder" />
           </div>
-          <p class="text-gray-500 text-lg font-light">
+          <p class="collections-empty-title">
             У вас пока нет подборок
           </p>
-          <p class="text-gray-400 text-sm mt-2">
+          <p class="collections-empty-description">
             Создайте первую подборку, чтобы начать организовывать сравнения
           </p>
         </div>
       </div>
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-else class="collections-grid">
         <div
           v-for="collection in collections"
           :key="collection.id"
-          class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200"
+          class="collection-card"
         >
-          <div class="p-6">
-            <div class="flex items-start justify-between">
-              <div class="flex-1">
-                <h3 class="text-lg font-medium text-gray-900 mb-1">
+          <div class="collection-card-content">
+            <div class="collection-card-header">
+              <div class="collection-card-info">
+                <h3 class="collection-card-title">
                   {{ collection.name || 'Без названия' }}
                 </h3>
-                <p class="text-sm text-gray-500">
+                <p class="collection-card-date">
                   Создана: {{ formatDate(collection.created_at) }}
                 </p>
-                <div v-if="collection.public_link" class="mt-2 flex items-center text-sm text-gray-500">
-                  <Link class="w-4 h-4 mr-1" />
-                  <span>Публичная ссылка создана</span>
+                <div v-if="collection.public_link" class="collection-card-link-indicator">
+                  <Link class="collection-card-link-icon" />
+                  <span class="collection-card-link-text">Публичная ссылка создана</span>
                 </div>
               </div>
-              <div class="flex gap-1">
+              <div class="collection-card-actions">
                 <Button
                   variant="ghost"
                   size="icon"
                   @click="editCollection(collection)"
-                  class="text-gray-500 hover:text-blue-600"
+                  class="collection-card-action collection-card-edit"
                 >
-                  <Edit3 class="w-4 h-4" />
+                  <Edit3 class="collection-card-action-icon" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   @click="togglePublicLink(collection)"
-                  class="text-gray-500 hover:text-green-600"
+                  class="collection-card-action collection-card-link"
                 >
-                  <component :is="collection.public_link ? 'Link' : 'Link2'" class="w-4 h-4" />
+                  <component :is="collection.public_link ? 'Link' : 'Link2'" class="collection-card-action-icon" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   @click="togglePinCollection(collection)"
-                  :class="collection.is_pinned ? 'text-yellow-500 hover:text-yellow-600' : 'text-gray-500 hover:text-yellow-500'"
+                  :class="['collection-card-action', 'collection-card-pin', collection.is_pinned ? 'collection-card-pinned' : 'collection-card-unpinned']"
                 >
-                  <component :is="collection.is_pinned ? 'Bookmark' : 'BookmarkPlus'" class="w-4 h-4" />
+                  <component :is="collection.is_pinned ? 'Bookmark' : 'BookmarkPlus'" class="collection-card-action-icon" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   @click="deleteCollection(collection.id)"
-                  class="text-gray-500 hover:text-red-600"
+                  class="collection-card-action collection-card-delete"
                 >
-                  <Trash2 class="w-4 h-4" />
+                  <Trash2 class="collection-card-action-icon" />
                 </Button>
               </div>
             </div>
-            <div class="mt-4 flex items-center justify-between">
+            <div class="collection-card-footer">
               <Button
                 @click="openCollection(collection)"
-                class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700"
+                class="collection-card-open-button"
               >
                 Открыть
               </Button>
@@ -121,29 +121,29 @@
 
       <!-- Модальное окно для создания/редактирования подборки -->
       <Dialog v-model:open="showCollectionDialog" @open-change="onDialogOpenChange">
-        <DialogContent class="max-w-md">
+        <DialogContent class="collection-dialog">
           <DialogHeader>
-            <DialogTitle>{{ editingCollection ? 'Редактировать подборку' : 'Создать подборку' }}</DialogTitle>
+            <DialogTitle class="collection-dialog-title">{{ editingCollection ? 'Редактировать подборку' : 'Создать подборку' }}</DialogTitle>
           </DialogHeader>
-          <div class="py-4">
-            <div class="space-y-4">
+          <div class="collection-dialog-content">
+            <div class="collection-form">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
+                <label class="collection-form-label">
                   Название подборки
                 </label>
                 <Input
                   v-model="collectionForm.name"
                   placeholder="Введите название подборки"
-                  class="w-full"
+                  class="collection-form-input"
                   @focus="$event.target.select()"
                   ref="collectionNameInput"
                 />
               </div>
             </div>
           </div>
-          <div class="flex justify-end gap-2">
-            <Button variant="outline" @click="showCollectionDialog = false">Отмена</Button>
-            <Button @click="saveCollection">
+          <div class="collection-dialog-footer">
+            <Button variant="outline" @click="showCollectionDialog = false" class="collection-dialog-cancel">Отмена</Button>
+            <Button @click="saveCollection" class="collection-dialog-save">
               {{ editingCollection ? 'Сохранить' : 'Создать' }}
             </Button>
           </div>
@@ -397,5 +397,426 @@ export default {
 </script>
 
 <style scoped>
-/* Дополнительные стили при необходимости */
+/* Стили для компонента CollectionsView */
+.collections-view {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f9fafb 0%, #eff6ff 30%, #f9fafb 100%);
+}
+
+.collections-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+/* Заголовок */
+.collections-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.collections-logo {
+  margin-bottom: 1rem;
+}
+
+.collections-logo-icon {
+  display: inline-flex;
+  padding: 0.75rem;
+  background-color: #2563eb;
+  border-radius: 1rem;
+}
+
+.collections-logo-folder {
+  width: 2rem;
+  height: 2rem;
+  color: white;
+}
+
+.collections-title {
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  color: #111827;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .collections-title {
+    font-size: 2.25rem;
+  }
+}
+
+.collections-subtitle {
+  font-size: 1.125rem;
+  color: #4b5563;
+  font-weight: 300;
+}
+
+/* Кнопки управления */
+.collections-actions {
+  margin-bottom: 2rem;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.collections-action-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collections-action-create {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+}
+
+.collections-action-create:hover {
+  background-color: #1d4ed8;
+}
+
+.collections-action-compare {
+  background-color: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.collections-action-compare:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.collections-action-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Состояние загрузки */
+.collections-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 0;
+}
+
+.collections-loading-icon {
+  width: 2rem;
+  height: 2rem;
+  animation: spin 1s linear infinite;
+  color: #2563eb;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Пустое состояние */
+.collections-empty {
+  text-align: center;
+  padding: 5rem 0;
+}
+
+.collections-empty-content {
+  display: inline-block;
+}
+
+.collections-empty-icon {
+  display: inline-flex;
+  background-color: #f3f4f6;
+  border-radius: 50%;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.collections-empty-folder {
+  width: 3rem;
+  height: 3rem;
+  color: #9ca3af;
+}
+
+.collections-empty-title {
+  color: #6b7280;
+  font-size: 1.125rem;
+  font-weight: 300;
+}
+
+.collections-empty-description {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+/* Сетка подборок */
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .collections-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .collections-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Карточка подборки */
+.collection-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  transition: box-shadow 200ms ease;
+}
+
+.collection-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.collection-card-content {
+  padding: 1.5rem;
+}
+
+.collection-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.collection-card-info {
+  flex: 1;
+}
+
+.collection-card-title {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.collection-card-date {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #6b7280;
+}
+
+.collection-card-link-indicator {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #6b7280;
+}
+
+.collection-card-link-icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.25rem;
+  color: #6b7280;
+}
+
+.collection-card-link-text {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.collection-card-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.collection-card-action {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.collection-card-edit {
+  color: #6b7280;
+}
+
+.collection-card-edit:hover {
+  color: #2563eb;
+  background-color: #dbeafe;
+}
+
+.collection-card-link {
+  color: #6b7280;
+}
+
+.collection-card-link:hover {
+  color: #16a34a;
+  background-color: #dcfce7;
+}
+
+.collection-card-pin {
+  color: #6b7280;
+}
+
+.collection-card-pinned {
+  color: #f59e0b;
+}
+
+.collection-card-unpinned:hover {
+  color: #f59e0b;
+  background-color: #fef3c7;
+}
+
+.collection-card-pinned:hover {
+  color: #d97706;
+  background-color: #fef3c7;
+}
+
+.collection-card-delete {
+  color: #6b7280;
+}
+
+.collection-card-delete:hover {
+  color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.collection-card-action-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.collection-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collection-card-open-button {
+  width: 100%;
+  background-color: #dbeafe;
+  color: #1e40af;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.collection-card-open-button:hover {
+  background-color: #bfdbfe;
+}
+
+/* Модальное окно */
+.collection-dialog {
+  max-width: 28rem;
+}
+
+.collection-dialog-title {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.collection-dialog-content {
+  padding: 1rem 0;
+}
+
+.collection-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.collection-form-label {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.collection-form-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.collection-form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.collection-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.collection-dialog-cancel {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  background-color: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.collection-dialog-cancel:hover {
+  background-color: #f9fafb;
+}
+
+.collection-dialog-save {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.collection-dialog-save:hover {
+  background-color: #1d4ed8;
+}
 </style>

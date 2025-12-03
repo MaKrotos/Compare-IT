@@ -1,8 +1,6 @@
 <template>
   <textarea
-    :class="[
-      'flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
-    ]"
+    class="textarea"
     v-bind="$attrs"
     :value="modelValue"
     @input="$emit('update:modelValue', $event.target.value)"
@@ -23,3 +21,41 @@ export default {
   emits: ['update:modelValue']
 }
 </script>
+
+<style scoped>
+.textarea {
+  display: flex;
+  min-height: 80px;
+  width: 100%;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-color, #d1d5db);
+  background-color: var(--background-color, #ffffff);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  background-color: var(--background-color, #ffffff);
+}
+
+.textarea::placeholder {
+  color: var(--muted-foreground, #6b7280);
+}
+
+.textarea:focus {
+  outline: none;
+  box-shadow: 
+    0 0 0 2px var(--ring-offset-background, #ffffff),
+    0 0 0 4px var(--ring-color, rgba(59, 130, 246, 0.5));
+}
+
+.textarea:focus-visible {
+  outline: none;
+  box-shadow: 
+    0 0 0 2px var(--ring-offset-background, #ffffff),
+    0 0 0 4px var(--ring-color, rgba(59, 130, 246, 0.5));
+}
+
+.textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+</style>

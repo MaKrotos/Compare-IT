@@ -3,7 +3,7 @@
     <CardHeader class="add-link-form-header">
       <CardTitle class="add-link-form-title">
         <div class="add-link-form-icon-container">
-          <Link2 class="w-5 h-5 text-blue-600" />
+          <Link2 class="add-link-form-icon" />
         </div>
         Добавить товары для сравнения
       </CardTitle>
@@ -12,35 +12,35 @@
       </p>
     </CardHeader>
     <CardContent class="add-link-form-content">
-      <div class="add-link-form-space-y-4">
-        <transition-group name="list" tag="div" class="add-link-form-space-y-4">
-          <div v-for="(link, index) in links" :key="index" class="space-y-3">
-            <div class="flex gap-3 items-start">
-              <div class="flex-1 space-y-3">
+      <div class="add-link-form-fields">
+        <transition-group name="list" tag="div" class="add-link-form-fields">
+          <div v-for="(link, index) in links" :key="index" class="add-link-form-field-group">
+            <div class="add-link-form-field-row">
+              <div class="add-link-form-field-column">
                 <!-- URL -->
-                <div class="relative add-link-form-input-container">
+                <div class="add-link-form-input-container add-link-form-url-input">
                   <Input
                     :value="link.url"
                     @input="updateLinkUrl(index, $event.target.value)"
                     :placeholder="`Ссылка на товар ${index + 1}`"
                     :disabled="isLoading"
                   />
-                  <Link2 class="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Link2 class="add-link-form-input-icon add-link-form-url-icon" />
                 </div>
 
                 <!-- Название товара -->
-                <div class="relative add-link-form-input-container">
+                <div class="add-link-form-input-container add-link-form-title-input">
                   <Input
                     :value="link.title"
                     @input="updateLinkTitle(index, $event.target.value)"
                     placeholder="Название товара"
                     :disabled="isLoading"
                   />
-                  <Tag class="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Tag class="add-link-form-input-icon add-link-form-title-icon" />
                 </div>
 
                 <!-- Цена -->
-                <div class="relative add-link-form-price-container">
+                <div class="add-link-form-input-container add-link-form-price-input">
                   <Input
                     type="number"
                     :value="link.price"
@@ -48,11 +48,11 @@
                     placeholder="Цена, ₽"
                     :disabled="isLoading"
                   />
-                  <DollarSign class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <DollarSign class="add-link-form-input-icon add-link-form-price-icon" />
                 </div>
                 
                 <!-- Ссылки на изображения -->
-                <div class="relative add-link-form-textarea-container">
+                <div class="add-link-form-textarea-container">
                   <Textarea
                     :value="link.imageUrls"
                     @input="updateLinkImageUrls(index, $event.target.value)"
@@ -60,7 +60,7 @@
                     placeholder="Ссылки на изображения (по одной на строку) или вставьте изображения (Ctrl+V)"
                     :disabled="isLoading"
                   />
-                  <Image class="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                  <Image class="add-link-form-textarea-icon" />
                 </div>
                 
                 <!-- Область для drag and drop -->
@@ -88,8 +88,9 @@
                 size="icon"
                 @click="removeLink(index)"
                 :disabled="isLoading"
+                class="add-link-form-remove-button"
               >
-                <X class="w-5 h-5" />
+                <X class="add-link-form-remove-icon" />
               </Button>
             </div>
           </div>
@@ -113,9 +114,9 @@
             :disabled="isLoading || !links.some(l => l.url.trim())"
             class="add-link-form-submit-button"
           >
-            <Loader2 v-if="isLoading" class="add-link-form-button-icon animate-spin" />
-            <span v-if="isLoading">Загрузка...</span>
-            <span v-else>Загрузить товары</span>
+            <Loader2 v-if="isLoading" class="add-link-form-loading-icon" />
+            <span v-if="isLoading" class="add-link-form-loading-text">Загрузка...</span>
+            <span v-else class="add-link-form-submit-text">Загрузить товары</span>
           </Button>
         </div>
       </div>
@@ -133,7 +134,7 @@ import CardContent from '@/components/ui/CardContent.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
 import { Plus, Link2, Loader2, DollarSign, X, Image, Tag, Upload } from 'lucide-vue-next'
-import { extractProductName, getCachedPreviewData } from '@/utils/preview.js'
+import { getCachedPreviewData } from '@/utils/preview.js'
 
 export default {
   name: 'AddLinkForm',
@@ -396,16 +397,14 @@ export default {
 /* Стили для компонента AddLinkForm */
 .add-link-form-container {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  background-color: #ffffff; /* white */
-  background-color: rgba(255, 255, 255, 0.9); /* white with 90% opacity */
+  background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(8px);
   border-radius: 1rem;
   overflow: hidden;
 }
 
 .add-link-form-header {
-  border-bottom-width: 1px;
-  border-color: #f3f4f6; /* gray-100 */
+  border-bottom: 1px solid #f3f4f6;
   padding-bottom: 1.25rem;
   background-image: linear-gradient(to right, rgba(219, 234, 254, 0.8), rgba(224, 231, 255, 0.8));
 }
@@ -418,19 +417,25 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: #1f2937; /* gray-800 */
+  color: #1f2937;
 }
 
 .add-link-form-icon-container {
   padding: 0.5rem;
-  background-color: #dbeafe; /* blue-100 */
-  border-radius: 9999px;
+  background-color: #dbeafe;
+  border-radius: 50%;
+}
+
+.add-link-form-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #2563eb;
 }
 
 .add-link-form-subtitle {
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
   margin-top: 0.375rem;
 }
 
@@ -438,71 +443,92 @@ export default {
   padding-top: 1.5rem;
 }
 
-.add-link-form-space-y-4 {
+.add-link-form-fields {
   margin-bottom: 1rem;
 }
 
-.add-link-form-space-y-4 > :not([hidden]) ~ :not([hidden]) {
-  margin-top: 1rem;
+.add-link-form-fields > :not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+.add-link-form-field-group {
+  margin-bottom: 1.5rem;
+}
+
+.add-link-form-field-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.add-link-form-field-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .add-link-form-input-container {
   position: relative;
-  padding-left: 2.75rem;
-  height: 2.75rem;
-  border-color: #e5e7eb; /* gray-200 */
-  border-radius: 0.5rem;
-  border-width: 1px;
 }
 
-.add-link-form-input-container:focus {
-  border-color: #3b82f6; /* blue-500 */
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-  transition-duration: 150ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+.add-link-form-input-icon {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.add-link-form-url-input {
+  padding-left: 2.75rem;
+}
+
+.add-link-form-title-input {
+  padding-left: 2.75rem;
+}
+
+.add-link-form-price-input {
+  padding-left: 2.5rem;
+}
+
+.add-link-form-price-icon {
+  left: 0.75rem;
 }
 
 .add-link-form-textarea-container {
   position: relative;
-  padding-left: 2.5rem;
-  height: 6rem;
-  border-color: #e5e7eb; /* gray-200 */
-  border-radius: 0.5rem;
-  border-width: 1px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-.add-link-form-price-container {
-  position: relative;
-  padding-left: 2.5rem;
-  height: 2.5rem;
-  border-color: #e5e7eb; /* gray-200 */
-  border-radius: 0.5rem;
-  border-width: 1px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+.add-link-form-textarea-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  width: 1rem;
+  height: 1rem;
+  color: #9ca3af;
+  pointer-events: none;
 }
 
 .add-link-form-drag-area {
-  border-width: 2px;
-  border-style: dashed;
-  border-color: #d1d5db; /* gray-300 */
+  border: 2px dashed #d1d5db;
   border-radius: 0.5rem;
   padding: 1rem;
   text-align: center;
   cursor: pointer;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .add-link-form-drag-area:hover {
-  border-color: #3b82f6; /* blue-500 */
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-  transition-duration: 150ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  border-color: #3b82f6;
 }
 
 .add-link-form-drag-area-active {
-  border-color: #3b82f6; /* blue-500 */
-  background-color: #dbeafe; /* blue-50 */
+  border-color: #3b82f6;
+  background-color: #dbeafe;
 }
 
 .add-link-form-drag-content {
@@ -516,20 +542,29 @@ export default {
 .add-link-form-drag-icon {
   width: 1.5rem;
   height: 1.5rem;
-  color: #9ca3af; /* gray-400 */
+  color: #9ca3af;
 }
 
 .add-link-form-drag-text {
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
 }
 
 .add-link-form-drag-subtext {
   font-size: 0.75rem;
   line-height: 1rem;
-  color: #6b7280; /* gray-500 */
+  color: #6b7280;
   margin-top: 0.25rem;
+}
+
+.add-link-form-remove-button {
+  margin-top: 0.25rem;
+}
+
+.add-link-form-remove-icon {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .add-link-form-button-container {
@@ -540,18 +575,15 @@ export default {
 
 .add-link-form-add-button {
   flex: 1;
-  border-style: dashed;
-  border-width: 2px;
+  border: 2px dashed #d1d5db;
   border-radius: 0.5rem;
   height: 3rem;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .add-link-form-add-button:hover {
-  border-color: #3b82f6; /* blue-500 */
-  background-color: #dbeafe; /* blue-50 */
-  transition-property: all;
-  transition-duration: 150ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  border-color: #3b82f6;
+  background-color: #dbeafe;
 }
 
 .add-link-form-submit-button {
@@ -562,14 +594,12 @@ export default {
   font-weight: 500;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .add-link-form-submit-button:hover {
-  background-image: linear-gradient(to right, #2563eb, #2563eb);
+  background-color: #1d4ed8;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  transition-property: all;
-  transition-duration: 150ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .add-link-form-button-icon {
@@ -578,10 +608,32 @@ export default {
   margin-right: 0.5rem;
 }
 
-.add-link-form-button-text {
+.add-link-form-loading-icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  animation: spin 1s linear infinite;
+}
+
+.add-link-form-loading-text {
   font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 500;
+}
+
+.add-link-form-submit-text {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .list-enter-active,

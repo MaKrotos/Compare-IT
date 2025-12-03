@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col space-y-1.5">
+  <div class="card-header">
     <slot />
   </div>
 </template>
@@ -9,3 +9,11 @@ export default {
   name: 'CardHeader'
 }
 </script>
+
+<style scoped>
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem; /* 1.5 * 0.25rem = 0.375rem */
+}
+</style>

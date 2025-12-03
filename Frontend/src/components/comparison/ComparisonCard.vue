@@ -24,7 +24,7 @@
               @click="prevImage"
               class="comparison-card-nav-button comparison-card-nav-button-left"
             >
-              <ChevronLeft class="w-5 h-5 text-gray-700" />
+              <ChevronLeft class="comparison-card-nav-icon" />
             </Button>
             
             <Button
@@ -34,7 +34,7 @@
               @click="nextImage"
               class="comparison-card-nav-button comparison-card-nav-button-right"
             >
-              <ChevronRight class="w-5 h-5 text-gray-700" />
+              <ChevronRight class="comparison-card-nav-icon" />
             </Button>
             
             <!-- Индикаторы изображений -->
@@ -52,13 +52,13 @@
           
           <!-- Заглушка если нет изображений -->
           <div v-else class="comparison-card-image-placeholder">
-            <Image class="w-12 h-12 text-gray-300" />
+            <Image class="comparison-card-placeholder-icon" />
           </div>
           
           <!-- Рейтинг badge -->
           <div v-if="item.rating !== undefined" class="comparison-card-rating-badge">
             <Badge class="comparison-card-rating-badge-content">
-              <Star class="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
+              <Star class="comparison-card-star-icon" />
               {{ item.rating }}
             </Badge>
           </div>
@@ -72,24 +72,24 @@
               ref="fileInput"
               @change="handleFileUpload"
               accept="image/*"
-              class="hidden"
+              class="comparison-card-file-input"
               multiple
             />
             <Button
               @click="$refs.fileInput.click()"
               size="sm"
               variant="outline"
-              class="flex-1"
+              class="comparison-card-upload-button"
             >
-              <Plus class="w-4 h-4 mr-1" />
+              <Plus class="comparison-card-button-icon" />
               Добавить фото
             </Button>
             <Button
               @click="saveImages"
               size="sm"
-              class="flex-1 bg-blue-600 hover:bg-blue-700"
+              class="comparison-card-save-button"
             >
-              <Save class="w-4 h-4 mr-1" />
+              <Save class="comparison-card-button-icon" />
               Сохранить
             </Button>
           </div>
@@ -125,8 +125,9 @@
               size="sm"
               variant="outline"
               :disabled="!imageUrlInput"
+              class="comparison-card-url-button"
             >
-              <Plus class="w-4 h-4" />
+              <Plus class="comparison-card-button-icon" />
             </Button>
           </div>
           
@@ -145,9 +146,9 @@
                 @click="removeEditingImage(index)"
                 size="icon"
                 variant="ghost"
-                class="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                class="comparison-card-remove-image-button"
               >
-                <X class="w-4 h-4" />
+                <X class="comparison-card-remove-icon" />
               </Button>
             </div>
           </div>
@@ -158,11 +159,11 @@
           <div v-if="isEditingTitle" class="comparison-card-title-editing">
             <Input
               v-model="title"
-              class="text-base font-medium"
+              class="comparison-card-title-input"
               @keyup.enter="saveTitle"
             />
-            <Button size="icon" @click="saveTitle" class="bg-blue-600 hover:bg-blue-700">
-              <Save class="w-4 h-4" />
+            <Button size="icon" @click="saveTitle" class="comparison-card-save-title-button">
+              <Save class="comparison-card-save-title-icon" />
             </Button>
           </div>
           <div v-else class="comparison-card-title-display">
@@ -173,7 +174,7 @@
                 @click="isEditingTitle = true"
                 class="comparison-card-title-button"
               >
-                <Edit2 class="w-4 h-4" />
+                <Edit2 class="comparison-card-edit-icon" />
               </Button>
               <Button
                 variant="ghost"
@@ -181,7 +182,7 @@
                 @click="onDelete"
                 class="comparison-card-delete-button"
               >
-                <Trash2 class="w-4 h-4" />
+                <Trash2 class="comparison-card-trash-icon" />
               </Button>
               <Button
                 variant="ghost"
@@ -189,7 +190,7 @@
                 @click="startEditingImages"
                 class="comparison-card-image-edit-button"
               >
-                <Image class="w-4 h-4" />
+                <Image class="comparison-card-image-icon" />
               </Button>
             </div>
             <h3 class="comparison-card-title-text">
@@ -202,7 +203,7 @@
             rel="noopener noreferrer"
             class="comparison-card-link"
           >
-            <ExternalLink class="w-3 h-3" />
+            <ExternalLink class="comparison-card-link-icon" />
             Открыть ссылку
           </a>
 
@@ -213,11 +214,11 @@
                 type="number"
                 v-model="price"
                 placeholder="Цена"
-                class="text-base"
+                class="comparison-card-price-input"
                 @keyup.enter="savePrice"
               />
-              <Button size="icon" @click="savePrice" class="bg-blue-600 hover:bg-blue-700 h-9 w-9">
-                <Save class="w-4 h-4" />
+              <Button size="icon" @click="savePrice" class="comparison-card-save-price-button">
+                <Save class="comparison-card-save-price-icon" />
               </Button>
             </div>
             <button
@@ -225,11 +226,11 @@
               @click="isEditingPrice = true"
               :disabled="readonly"
               class="comparison-card-price-display"
-              :class="{ 'cursor-default': readonly }"
+              :class="{ 'comparison-card-price-disabled': readonly }"
             >
               <DollarSign class="comparison-card-price-icon" />
-              <span v-if="item.price">{{ item.price.toLocaleString() }} {{ item.currency || '₽' }}</span>
-              <span v-else>Указать цену</span>
+              <span v-if="item.price" class="comparison-card-price-value">{{ item.price.toLocaleString() }} {{ item.currency || '₽' }}</span>
+              <span v-else class="comparison-card-price-placeholder">Указать цену</span>
             </button>
           </div>
         </div>
@@ -254,31 +255,31 @@
       <!-- Статистика -->
       <div class="comparison-card-stats">
         <div class="comparison-card-stats-grid">
-          <div>
+          <div class="comparison-card-stat-item">
             <div class="comparison-card-stat-value comparison-card-stat-value-pro">
               {{ (item.pros || []).reduce((sum, p) => sum + (p.impact || 5), 0) }}
             </div>
             <div class="comparison-card-stat-label">{{ (item.pros || []).length }} плюсов</div>
           </div>
-          <div>
+          <div class="comparison-card-stat-item">
             <div class="comparison-card-stat-value comparison-card-stat-value-con">
               {{ (item.cons || []).reduce((sum, c) => sum + (c.impact || 5), 0) }}
             </div>
             <div class="comparison-card-stat-label">{{ (item.cons || []).length }} минусов</div>
           </div>
-          <div>
+          <div class="comparison-card-stat-item">
             <div class="comparison-card-stat-value comparison-card-stat-value-rating">
               {{ item.rating?.toFixed(1) || '—' }}
             </div>
             <div class="comparison-card-stat-label">общий рейтинг</div>
           </div>
-          <div>
+          <div class="comparison-card-stat-item">
             <div class="comparison-card-stat-value comparison-card-stat-value-price">
               {{ item.priceRating?.toFixed(1) || '—' }}
             </div>
             <div class="comparison-card-stat-label">рейтинг цены</div>
           </div>
-          <div>
+          <div class="comparison-card-stat-item">
             <div class="comparison-card-stat-value comparison-card-stat-value-pros-cons">
               {{ item.prosConsRating?.toFixed(1) || '—' }}
             </div>
@@ -669,10 +670,11 @@ export default {
   }
 }
 
+/* Стили для изображения */
 .comparison-card-image-container {
   position: relative;
   aspect-ratio: 1 / 1;
-  background-color: #f9fafb; /* gray-50 */
+  background-color: #f9fafb;
   overflow: hidden;
   border-top-left-radius: 0.75rem;
   border-top-right-radius: 0.75rem;
@@ -690,19 +692,20 @@ export default {
   object-fit: cover;
 }
 
+/* Навигация по изображениям */
 .comparison-card-nav-button {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(255, 255, 255, 0.8); /* white with 80% opacity */
-  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
   height: 2rem;
   width: 2rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 
 .comparison-card-nav-button:hover {
-  background-color: #ffffff; /* white */
+  background-color: #ffffff;
 }
 
 .comparison-card-nav-button-left {
@@ -713,6 +716,13 @@ export default {
   right: 0.5rem;
 }
 
+.comparison-card-nav-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #374151;
+}
+
+/* Индикаторы изображений */
 .comparison-card-indicators {
   position: absolute;
   bottom: 0.75rem;
@@ -725,30 +735,36 @@ export default {
 .comparison-card-indicator {
   height: 0.375rem;
   border-radius: 9999px;
-  transition-property: all;
-  transition-duration: 150ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .comparison-card-indicator-active {
   width: 1.5rem;
-  background-color: #ffffff; /* white */
+  background-color: #ffffff;
 }
 
 .comparison-card-indicator-inactive {
   width: 0.375rem;
-  background-color: rgba(255, 255, 255, 0.6); /* white with 60% opacity */
+  background-color: rgba(255, 255, 255, 0.6);
 }
 
+/* Заглушка для изображения */
 .comparison-card-image-placeholder {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f3f4f6; /* gray-100 */
+  background-color: #f3f4f6;
 }
 
+.comparison-card-placeholder-icon {
+  width: 3rem;
+  height: 3rem;
+  color: #d1d5db;
+}
+
+/* Рейтинг badge */
 .comparison-card-rating-badge {
   position: absolute;
   top: 0.75rem;
@@ -756,8 +772,8 @@ export default {
 }
 
 .comparison-card-rating-badge-content {
-  background-color: rgba(255, 255, 255, 0.95); /* white with 95% opacity */
-  color: #111827; /* gray-900 */
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #111827;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   font-size: 1rem;
   line-height: 1.5rem;
@@ -766,11 +782,19 @@ export default {
   border-radius: 9999px;
 }
 
+.comparison-card-star-icon {
+  width: 1rem;
+  height: 1rem;
+  fill: #fbbf24;
+  color: #fbbf24;
+  margin-right: 0.25rem;
+}
+
+/* Редактирование изображений */
 .comparison-card-editing-container {
   padding: 0.75rem;
-  background-color: #f9fafb; /* gray-50 */
-  border-bottom-width: 1px;
-  border-color: #e5e7eb; /* gray-200 */
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .comparison-card-editing-buttons {
@@ -779,22 +803,42 @@ export default {
   flex-wrap: wrap;
 }
 
+.comparison-card-file-input {
+  display: none;
+}
+
+.comparison-card-upload-button,
+.comparison-card-save-button {
+  flex: 1;
+}
+
+.comparison-card-save-button {
+  background-color: #2563eb;
+}
+
+.comparison-card-save-button:hover {
+  background-color: #1d4ed8;
+}
+
+.comparison-card-button-icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.25rem;
+}
+
+/* Drag and drop область */
 .comparison-card-drag-area {
   margin-top: 0.75rem;
-  border-width: 2px;
-  border-style: dashed;
-  border-color: #d1d5db; /* gray-300 */
+  border: 2px dashed #d1d5db;
   border-radius: 0.5rem;
   padding: 1rem;
   text-align: center;
   cursor: pointer;
+  transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .comparison-card-drag-area:hover {
-  border-color: #3b82f6; /* blue-500 */
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-  transition-duration: 150ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  border-color: #3b82f6;
 }
 
 .comparison-card-drag-area:focus {
@@ -803,13 +847,13 @@ export default {
 }
 
 .comparison-card-drag-area:focus-visible {
-  box-shadow: 0 0 0 2px #3b82f6; /* blue-500 */
+  box-shadow: 0 0 0 2px #3b82f6;
   border-color: transparent;
 }
 
 .comparison-card-drag-area-active {
-  border-color: #3b82f6; /* blue-500 */
-  background-color: #dbeafe; /* blue-50 */
+  border-color: #3b82f6;
+  background-color: #dbeafe;
 }
 
 .comparison-card-drag-content {
@@ -823,22 +867,23 @@ export default {
 .comparison-card-drag-icon {
   width: 1.5rem;
   height: 1.5rem;
-  color: #9ca3af; /* gray-400 */
+  color: #9ca3af;
 }
 
 .comparison-card-drag-text {
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
 }
 
 .comparison-card-drag-subtext {
   font-size: 0.75rem;
   line-height: 1rem;
-  color: #6b7280; /* gray-500 */
+  color: #6b7280;
   margin-top: 0.25rem;
 }
 
+/* URL ввод для изображений */
 .comparison-card-url-input-container {
   margin-top: 0.75rem;
   display: flex;
@@ -851,6 +896,11 @@ export default {
   line-height: 1.25rem;
 }
 
+.comparison-card-url-button {
+  padding: 0 0.75rem;
+}
+
+/* Список изображений */
 .comparison-card-images-list {
   margin-top: 0.75rem;
   max-height: 10rem;
@@ -862,9 +912,9 @@ export default {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem;
-  background-color: #ffffff; /* white */
+  background-color: #ffffff;
   border-radius: 0.25rem;
-  border-width: 1px;
+  border: 1px solid #e5e7eb;
   margin-bottom: 0.5rem;
 }
 
@@ -885,21 +935,60 @@ export default {
 .comparison-card-image-text {
   font-size: 0.75rem;
   line-height: 1rem;
-  color: #6b7280; /* gray-500 */
+  color: #6b7280;
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1;
 }
 
+.comparison-card-remove-image-button {
+  height: 2rem;
+  width: 2rem;
+  color: #ef4444;
+}
+
+.comparison-card-remove-image-button:hover {
+  color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.comparison-card-remove-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Заголовок */
 .comparison-card-title-container {
   padding: 1rem;
-  border-bottom-width: 1px;
-  border-color: #f3f4f6; /* gray-100 */
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .comparison-card-title-editing {
   display: flex;
   gap: 0.5rem;
+}
+
+.comparison-card-title-input {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  flex: 1;
+}
+
+.comparison-card-save-title-button {
+  height: 2.5rem;
+  width: 2.5rem;
+  background-color: #2563eb;
+}
+
+.comparison-card-save-title-button:hover {
+  background-color: #1d4ed8;
+}
+
+.comparison-card-save-title-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #ffffff;
 }
 
 .comparison-card-title-display {
@@ -910,10 +999,9 @@ export default {
 
 .comparison-card-title-text {
   font-size: 1.125rem;
-  line-height: 1.75rem;
-  font-weight: 500;
-  color: #111827; /* gray-900 */
   line-height: 1.375;
+  font-weight: 500;
+  color: #111827;
   flex: 1;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -925,57 +1013,60 @@ export default {
   gap: 0.25rem;
 }
 
-.comparison-card-title-button {
+.comparison-card-title-button,
+.comparison-card-delete-button,
+.comparison-card-image-edit-button {
   height: 2rem;
   width: 2rem;
-  color: #9ca3af; /* gray-400 */
+  color: #9ca3af;
   border-radius: 9999px;
 }
 
 .comparison-card-title-button:hover {
-  color: #2563eb; /* blue-600 */
-  background-color: #dbeafe; /* blue-50 */
-}
-
-.comparison-card-delete-button {
-  height: 2rem;
-  width: 2rem;
-  color: #9ca3af; /* gray-400 */
-  border-radius: 9999px;
+  color: #2563eb;
+  background-color: #dbeafe;
 }
 
 .comparison-card-delete-button:hover {
-  color: #dc2626; /* red-600 */
-  background-color: #fef2f2; /* red-50 */
-}
-
-.comparison-card-image-edit-button {
-  height: 2rem;
-  width: 2rem;
-  color: #9ca3af; /* gray-400 */
-  border-radius: 9999px;
+  color: #dc2626;
+  background-color: #fef2f2;
 }
 
 .comparison-card-image-edit-button:hover {
-  color: #16a34a; /* green-600 */
-  background-color: #dcfce7; /* green-50 */
+  color: #16a34a;
+  background-color: #dcfce7;
 }
 
+.comparison-card-edit-icon,
+.comparison-card-trash-icon,
+.comparison-card-image-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Ссылка на товар */
 .comparison-card-link {
   font-size: 0.75rem;
   line-height: 1rem;
-  color: #2563eb; /* blue-600 */
+  color: #2563eb;
   display: flex;
   align-items: center;
   gap: 0.25rem;
   margin-top: 0.5rem;
+  text-decoration: none;
 }
 
 .comparison-card-link:hover {
-  color: #1d4ed8; /* blue-700 */
+  color: #1d4ed8;
   text-decoration: underline;
 }
 
+.comparison-card-link-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Цена */
 .comparison-card-price-container {
   margin-top: 0.75rem;
 }
@@ -986,6 +1077,28 @@ export default {
   align-items: center;
 }
 
+.comparison-card-price-input {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  flex: 1;
+}
+
+.comparison-card-save-price-button {
+  height: 2.25rem;
+  width: 2.25rem;
+  background-color: #2563eb;
+}
+
+.comparison-card-save-price-button:hover {
+  background-color: #1d4ed8;
+}
+
+.comparison-card-save-price-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #ffffff;
+}
+
 .comparison-card-price-display {
   display: flex;
   align-items: center;
@@ -993,39 +1106,49 @@ export default {
   font-size: 1.125rem;
   line-height: 1.75rem;
   font-weight: 600;
-  color: #2563eb; /* blue-600 */
+  color: #2563eb;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.comparison-card-price-display:hover {
-  color: #1d4ed8; /* blue-700 */
-  transition-property: color;
-  transition-duration: 150ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+.comparison-card-price-display:hover:not(.comparison-card-price-disabled) {
+  color: #1d4ed8;
+}
+
+.comparison-card-price-disabled {
+  cursor: default;
 }
 
 .comparison-card-price-icon {
   width: 1.25rem;
   height: 1.25rem;
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.comparison-card-price-icon:hover {
+.comparison-card-price-display:hover:not(.comparison-card-price-disabled) .comparison-card-price-icon {
   transform: scale(1.1);
-  transition-property: transform;
-  transition-duration: 150ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.comparison-card-price-value,
+.comparison-card-price-placeholder {
+  font-weight: 600;
+}
+
+/* Контент карточки */
 .comparison-card-content {
   padding: 1rem;
   margin-bottom: 1rem;
   flex: 1;
 }
 
+/* Статистика */
 .comparison-card-stats {
   padding: 1rem;
-  border-top-width: 1px;
-  border-color: #f3f4f6; /* gray-100 */
-  background-color: rgba(249, 250, 251, 0.5); /* gray-50 with 50% opacity */
+  border-top: 1px solid #f3f4f6;
+  background-color: rgba(249, 250, 251, 0.5);
 }
 
 .comparison-card-stats-grid {
@@ -1035,6 +1158,11 @@ export default {
   text-align: center;
 }
 
+.comparison-card-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
 .comparison-card-stat-value {
   font-size: 1.25rem;
   line-height: 1.75rem;
@@ -1042,41 +1170,38 @@ export default {
 }
 
 .comparison-card-stat-value-pro {
-  color: #16a34a; /* green-600 */
+  color: #16a34a;
 }
 
 .comparison-card-stat-value-con {
-  color: #dc2626; /* red-600 */
+  color: #dc2626;
 }
 
 .comparison-card-stat-value-rating {
-  color: #2563eb; /* blue-600 */
+  color: #2563eb;
 }
 
 .comparison-card-stat-value-price {
-  color: #f59e0b; /* amber-500 */
+  color: #f59e0b;
 }
 
 .comparison-card-stat-value-pros-cons {
-  color: #8b5cf6; /* violet-500 */
+  color: #8b5cf6;
 }
 
 .comparison-card-stat-label {
   font-size: 0.75rem;
   line-height: 1rem;
-  color: #6b7280; /* gray-500 */
+  color: #6b7280;
 }
 
+/* Анимации */
 .comparison-card-fade-enter-active {
-  transition-property: opacity;
-  transition-duration: 100ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  transition: opacity 100ms cubic-bezier(0.4, 0, 1, 1);
 }
 
 .comparison-card-fade-leave-active {
-  transition-property: opacity;
-  transition-duration: 100ms;
-  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  transition: opacity 100ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 .comparison-card-fade-enter-from,

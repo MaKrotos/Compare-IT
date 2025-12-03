@@ -11,7 +11,7 @@
         @click="isAdding = true"
         :class="['pro-con-item-add-button', isPro ? 'pro-con-item-add-button-pro' : 'pro-con-item-add-button-con']"
       >
-        <Plus class="w-3 h-3 mr-1" />
+        <Plus class="pro-con-item-add-icon" />
         Добавить
       </Button>
     </div>
@@ -32,7 +32,7 @@
                 <p class="pro-con-item-text">{{ item.text }}</p>
                 <Badge
                   variant="outline"
-                  :class="['pro-con-item-impact-badge', getImpactColor(item.impact || 5)]"
+                  :class="['pro-con-item-impact-badge', getImpactClass(item.impact || 5)]"
                 >
                   {{ item.impact || 5 }}/10
                 </Badge>
@@ -41,7 +41,7 @@
                 <div class="pro-con-item-slider-content">
                   <div class="pro-con-item-slider-header">
                     <div class="pro-con-item-slider-label">
-                      <TrendingUp class="w-3 h-3" />
+                      <TrendingUp class="pro-con-item-slider-icon" />
                       Влияние
                     </div>
                     <Slider
@@ -63,7 +63,7 @@
               @click="removeItem(index)"
               class="pro-con-item-delete-button"
             >
-              <Trash2 class="w-3 h-3" />
+              <Trash2 class="pro-con-item-delete-icon" />
             </Button>
           </div>
         </div>
@@ -83,7 +83,7 @@
           @click="addItem"
           :class="['pro-con-item-save-button', isPro ? 'pro-con-item-save-button-pro' : 'pro-con-item-save-button-con']"
         >
-          <Check class="w-4 h-4" />
+          <Check class="pro-con-item-save-icon" />
         </Button>
         <Button
           variant="ghost"
@@ -91,7 +91,7 @@
           @click="cancelAdd"
           class="pro-con-item-cancel-button"
         >
-          <X class="w-4 h-4" />
+          <X class="pro-con-item-cancel-icon" />
         </Button>
       </div>
     </transition>
@@ -143,21 +143,14 @@ export default {
     const isPro = computed(() => props.type === 'pro')
     const hoveredItem = ref(null)
 
-    const getImpactColor = (impact) => {
-      // Для плюсов используем зеленый цвет, для минусов - красный
+    const getImpactClass = (impact) => {
       if (impact <= 3) {
-        return isPro.value
-          ? 'bg-green-100 text-green-700 border-green-200'
-          : 'bg-gray-100 text-gray-700 border-gray-200'
+        return isPro.value ? 'pro-con-item-impact-badge-low-pro' : 'pro-con-item-impact-badge-low-con'
       }
       if (impact <= 6) {
-        return isPro.value
-          ? 'bg-green-100 text-green-700 border-green-200'
-          : 'bg-yellow-100 text-yellow-700 border-yellow-200'
+        return isPro.value ? 'pro-con-item-impact-badge-medium-pro' : 'pro-con-item-impact-badge-medium-con'
       }
-      return isPro.value
-        ? 'bg-green-100 text-green-700 border-green-200'
-        : 'bg-red-100 text-red-700 border-red-200'
+      return isPro.value ? 'pro-con-item-impact-badge-high-pro' : 'pro-con-item-impact-badge-high-con'
     }
 
     const addItem = () => {
@@ -192,7 +185,7 @@ export default {
       isAdding,
       hoveredItem,
       isPro,
-      getImpactColor,
+      getImpactClass,
       addItem,
       removeItem,
       updateImpact,
@@ -212,6 +205,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 0.5rem;
 }
 
 .pro-con-item-title {
@@ -232,11 +226,16 @@ export default {
   height: 1.75rem;
   font-size: 0.75rem;
   line-height: 1rem;
+  padding: 0 0.5rem;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
 }
 
 .pro-con-item-add-button-pro {
   background-color: #f0fdf4; /* green-50 */
   color: #16a34a; /* green-600 */
+  border: 1px solid #dcfce7; /* green-100 */
 }
 
 .pro-con-item-add-button-pro:hover {
@@ -246,30 +245,41 @@ export default {
 .pro-con-item-add-button-con {
   background-color: #fef2f2; /* red-50 */
   color: #dc2626; /* red-600 */
+  border: 1px solid #fee2e2; /* red-100 */
 }
 
 .pro-con-item-add-button-con:hover {
   background-color: #fee2e2; /* red-100 */
 }
 
+.pro-con-item-add-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-right: 0.25rem;
+}
+
 .pro-con-item-list {
   margin-bottom: 0.5rem;
+}
+
+.pro-con-item-list > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .pro-con-item-card {
   padding: 0.5rem;
   border-radius: 0.375rem;
-  border-width: 1px;
+  border: 1px solid;
 }
 
 .pro-con-item-card-pro {
-  background-color: #f0fdf4; /* green-50 */
   background-color: rgba(240, 253, 244, 0.3); /* green-50 with 30% opacity */
   border-color: #dcfce7; /* green-100 */
 }
 
 .pro-con-item-card-con {
-  background-color: #fef2f2; /* red-50 */
   background-color: rgba(254, 242, 242, 0.3); /* red-50 with 30% opacity */
   border-color: #fee2e2; /* red-100 */
 }
@@ -284,7 +294,7 @@ export default {
   margin-top: 0.375rem;
   width: 0.375rem;
   height: 0.375rem;
-  border-radius: 9999px;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
@@ -313,23 +323,40 @@ export default {
   line-height: 1.25rem;
   color: #1f2937; /* gray-800 */
   line-height: 1.625;
+  flex: 1;
+  word-break: break-word;
 }
 
+/* Стили для бейджей влияния */
 .pro-con-item-impact-badge {
   font-size: 0.75rem;
   line-height: 1rem;
-  border-width: 1px;
+  border: 1px solid;
   font-weight: 600;
   white-space: nowrap;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
 }
 
-.pro-con-item-impact-badge-low {
+.pro-con-item-impact-badge-low-pro {
   background-color: #f3f4f6; /* gray-100 */
   color: #374151; /* gray-700 */
   border-color: #e5e7eb; /* gray-200 */
 }
 
-.pro-con-item-impact-badge-medium {
+.pro-con-item-impact-badge-low-con {
+  background-color: #f3f4f6; /* gray-100 */
+  color: #374151; /* gray-700 */
+  border-color: #e5e7eb; /* gray-200 */
+}
+
+.pro-con-item-impact-badge-medium-pro {
+  background-color: #fef9c3; /* yellow-100 */
+  color: #a16207; /* yellow-700 */
+  border-color: #fef08a; /* yellow-200 */
+}
+
+.pro-con-item-impact-badge-medium-con {
   background-color: #fef9c3; /* yellow-100 */
   color: #a16207; /* yellow-700 */
   border-color: #fef08a; /* yellow-200 */
@@ -347,10 +374,9 @@ export default {
   border-color: #fecaca; /* red-200 */
 }
 
+/* Стили для слайдера */
 .pro-con-item-slider-container {
-  transition-property: all;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
   max-height: 0;
   overflow: hidden;
 }
@@ -380,16 +406,23 @@ export default {
   gap: 0.25rem;
 }
 
+.pro-con-item-slider-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
 .pro-con-item-slider {
   flex: 1;
 }
 
+/* Кнопка удаления */
 .pro-con-item-delete-button {
   height: 1.5rem;
   width: 1.5rem;
   color: #9ca3af; /* gray-400 */
-  border-radius: 9999px;
+  border-radius: 50%;
   flex-shrink: 0;
+  padding: 0;
 }
 
 .pro-con-item-delete-button:hover {
@@ -397,25 +430,48 @@ export default {
   background-color: #fef2f2; /* red-50 */
 }
 
+.pro-con-item-delete-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Форма добавления */
 .pro-con-item-add-container {
   display: flex;
   gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .pro-con-item-input {
   font-size: 0.875rem;
   line-height: 1.25rem;
   height: 2.25rem;
+  flex: 1;
+  padding: 0 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+}
+
+.pro-con-item-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
 }
 
 .pro-con-item-save-button {
   height: 2.25rem;
   width: 2.25rem;
-  border-radius: 9999px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pro-con-item-save-button-pro {
   background-color: #16a34a; /* green-600 */
+  color: white;
 }
 
 .pro-con-item-save-button-pro:hover {
@@ -424,28 +480,44 @@ export default {
 
 .pro-con-item-save-button-con {
   background-color: #dc2626; /* red-600 */
+  color: white;
 }
 
 .pro-con-item-save-button-con:hover {
   background-color: #b91c1c; /* red-700 */
 }
 
+.pro-con-item-save-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
 .pro-con-item-cancel-button {
   height: 2.25rem;
   width: 2.25rem;
-  border-radius: 9999px;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.pro-con-item-list-enter-active {
-  transition-property: all;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+.pro-con-item-cancel-button:hover {
+  background-color: #f3f4f6;
 }
 
+.pro-con-item-cancel-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #6b7280;
+}
+
+/* Анимации */
+.pro-con-item-list-enter-active,
 .pro-con-item-list-leave-active {
-  transition-property: all;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .pro-con-item-list-enter-from {
@@ -458,97 +530,17 @@ export default {
   transform: translateX(-10px);
 }
 
-.pro-con-item-fade-enter-active {
-  transition-property: opacity;
-  transition-duration: 100ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+.pro-con-item-list-leave-active {
+  position: absolute;
 }
 
+.pro-con-item-fade-enter-active,
 .pro-con-item-fade-leave-active {
-  transition-property: opacity;
-  transition-duration: 100ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 100ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.pro-con-item-fade-enter-from {
-  opacity: 0;
-}
-
+.pro-con-item-fade-enter-from,
 .pro-con-item-fade-leave-to {
   opacity: 0;
-}
-
-.pro-con-item-slide-enter-active {
-  transition-property: all;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.pro-con-item-slide-leave-active {
-  transition-property: all;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.pro-con-item-slide-enter-from {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.pro-con-item-slide-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.pro-con-item-slide-container {
-  transition-property: all;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  max-height: 0;
-  overflow: hidden;
-}
-
-.pro-con-item-slide-container-open {
-  max-height: 60px;
-}
-
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.3s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(-10px);
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.1s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.3s ease;
-}
-
-.slide-enter-from,
-.slide-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.pro-con-item-slide-container {
-  @apply transition-all duration-300 ease-in-out max-h-0 overflow-hidden;
-}
-
-.pro-con-item-slide-container-open {
-  @apply max-h-[60px];
 }
 </style>

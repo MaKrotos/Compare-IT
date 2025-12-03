@@ -1,5 +1,5 @@
 <template>
-  <div class=" pt-0">
+  <div class="card-content">
     <slot />
   </div>
 </template>
@@ -9,3 +9,9 @@ export default {
   name: 'CardContent'
 }
 </script>
+
+<style scoped>
+.card-content {
+  padding-top: 0;
+}
+</style>
