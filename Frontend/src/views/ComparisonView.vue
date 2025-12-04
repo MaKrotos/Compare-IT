@@ -107,6 +107,14 @@
         </Dialog>
       </div>
       
+      <!-- Кнопка сортировки -->
+      <div class="comparison-sort-container">
+        <Button @click="toggleSort" class="comparison-sort-button">
+          <component :is="sortType === 'date' ? 'BarChart3' : 'Calendar'" class="comparison-sort-icon" />
+          Сортировать по: {{ sortType === 'date' ? 'Рейтингу' : 'Дате добавления' }}
+        </Button>
+      </div>
+      
       <!-- Форма добавления -->
       <div class="comparison-add-form-container">
         <AddLinkForm :on-add-links="handleAddLinks" :is-loading="isLoadingItems" />
@@ -136,9 +144,9 @@
         </div>
       </div>
       <div v-else class="comparison-items">
-        <transition-group name="comparison-list" tag="div" class="comparison-items-grid">
+        <transition-group name="comparison-list" tag="div" class="comparison-items-grid" move-class="comparison-move">
           <div
-            v-for="(item, index) in items"
+            v-for="(item, index) in sortedItems"
             :key="item.id"
             class="comparison-item-container"
           >
@@ -146,6 +154,7 @@
               :item="item"
               :on-update="(data) => handleUpdateItem(item.id, data)"
               :on-delete="() => handleDeleteItem(item.id)"
+              :item-number="index + 1"
             />
           </div>
         </transition-group>
@@ -165,7 +174,7 @@ import Button from '@/components/ui/Button.vue'
 import Textarea from '@/components/ui/Textarea.vue'
 import AddLinkForm from '@/components/comparison/AddLinkForm.vue'
 import ComparisonCard from '@/components/comparison/ComparisonCard.vue'
-import { Scale, Loader2, Download, Upload, FolderOpen, Link, Link2, Copy } from 'lucide-vue-next'
+import { Scale, Loader2, Download, Upload, FolderOpen, Link, Link2, Copy, BarChart3, Calendar } from 'lucide-vue-next'
 import RatingControls from '@/components/comparison/RatingControls.vue'
 import { useCollection } from '@/composables/useCollection.js'
 import { useImportExport } from '@/composables/useImportExport.js'
@@ -191,7 +200,9 @@ export default {
     FolderOpen,
     Link,
     Link2,
-    Copy
+    Copy,
+    BarChart3,
+    Calendar
   },
   setup() {
     const route = useRoute()
@@ -213,15 +224,15 @@ export default {
     const { handleExport: exportItems, handleImport: importItems } = useImportExport()
     
     // Используем composable для управления публичными ссылками
-    const { 
-      publicLink, 
-      togglePublicLink: toggleLink, 
-      copyPublicLink: copyLink, 
-      getFullPublicLink 
+    const {
+      publicLink,
+      togglePublicLink: toggleLink,
+      copyPublicLink: copyLink,
+      getFullPublicLink
     } = usePublicLink()
     
     // Используем composable для управления рейтингами
-    const { 
+    const {
       handleRatingWeightsSave: saveRatingWeights,
       createItem,
       updateItem,
@@ -233,6 +244,20 @@ export default {
     const importData = ref('')
     const showImportField = ref(false)
     const showCollectionsDialog = ref(false)
+    
+    // Состояние сортировки
+    const sortType = ref('date') // 'date' или 'rating'
+    
+    // Вычисляем отсортированные элементы
+    const sortedItems = computed(() => {
+      if (sortType.value === 'rating') {
+        // Сортировка по рейтингу (по убыванию)
+        return [...items.value].sort((a, b) => (b.rating || 0) - (a.rating || 0))
+      } else {
+        // Сортировка по дате добавления (по возрастанию - от старой к новой)
+        return [...items.value].sort((a, b) => new Date(a.created_date) - new Date(b.created_date))
+      }
+    })
     
     // Инициализация
     onMounted(async () => {
@@ -338,8 +363,15 @@ export default {
       router.push('/')
     }
     
+    // Переключение типа сортировки
+    const toggleSort = () => {
+      sortType.value = sortType.value === 'date' ? 'rating' : 'date'
+    }
+    
     return {
       items,
+      sortedItems,
+      sortType,
       isLoadingItems,
       isLoading,
       importData,
@@ -358,7 +390,8 @@ export default {
       collectionId,
       publicLink,
       ratingWeights,
-      handleRatingWeightsSave
+      handleRatingWeightsSave,
+      toggleSort
     }
   }
 }
@@ -625,9 +658,43 @@ export default {
   background-color: #f9fafb;
 }
 
+
 /* Форма добавления */
 .comparison-add-form-container {
   margin-bottom: 3rem;
+}
+
+/* Кнопка сортировки */
+.comparison-sort-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.comparison-sort-button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.comparison-sort-button:hover {
+  background-color: #1d4ed8;
+}
+
+.comparison-sort-icon {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 /* Элементы управления рейтингами */
@@ -720,5 +787,9 @@ export default {
 
 .comparison-list-leave-active {
   position: absolute;
+}
+
+.comparison-move {
+  transition: transform 0.5s ease;
 }
 </style>

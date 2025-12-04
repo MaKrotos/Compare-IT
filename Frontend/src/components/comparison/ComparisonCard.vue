@@ -3,7 +3,7 @@
     <Card class="comparison-card">
       <CardHeader class="comparison-card-header">
         <!-- Изображение -->
-        <ImageGallery :item="item" :title="item.title || 'Без названия'" />
+        <ImageGallery :item="item" :title="item.title || 'Без названия'" :item-number="itemNumber" />
         
         <!-- Кнопки управления изображениями -->
         <ImageUploader
@@ -90,6 +90,10 @@ export default {
     readonly: {
       type: Boolean,
       default: false
+    },
+    itemNumber: {
+      type: Number,
+      default: 0
     }
   },
   setup(props) {

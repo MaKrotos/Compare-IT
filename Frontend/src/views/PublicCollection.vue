@@ -29,6 +29,14 @@
           </div>
         </div>
       </div>
+      
+      <!-- Кнопка сортировки -->
+      <div class="public-collection-sort-container">
+        <Button @click="toggleSort" class="public-collection-sort-button">
+          <component :is="sortType === 'date' ? 'BarChart3' : 'Calendar'" class="public-collection-sort-icon" />
+          Сортировать по: {{ sortType === 'date' ? 'Рейтингу' : 'Дате добавления' }}
+        </Button>
+      </div>
 
       <!-- Список товаров -->
       <div v-if="isLoading" class="public-collection-loading">
@@ -49,15 +57,17 @@
           name="public-collection-list"
           tag="div"
           class="public-collection-items-grid"
+          move-class="public-collection-move"
         >
           <div
-            v-for="item in items"
+            v-for="(item, index) in sortedItems"
             :key="`item-${item.id}`"
             class="public-collection-item-container"
           >
             <ComparisonCard
               :item="item"
               :readonly="true"
+              :item-number="index + 1"
             />
           </div>
         </transition-group>
@@ -67,11 +77,12 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import ComparisonCard from '@/components/comparison/ComparisonCard.vue'
-import { Scale, Loader2, Info } from 'lucide-vue-next'
+import { Scale, Loader2, Info, BarChart3, Calendar } from 'lucide-vue-next'
 import { getPublicCollection } from '@/utils/publicCollections.js'
+import Button from '@/components/ui/Button.vue'
 
 export default {
   name: 'PublicCollection',
@@ -79,7 +90,10 @@ export default {
     ComparisonCard,
     Scale,
     Loader2,
-    Info
+    Info,
+    BarChart3,
+    Calendar,
+    Button
   },
   setup() {
     const route = useRoute()
@@ -88,6 +102,20 @@ export default {
     const isLoading = ref(true)
     const error = ref(null)
     const refreshInterval = ref(null)
+    
+    // Состояние сортировки
+    const sortType = ref('date') // 'date' или 'rating'
+
+    // Вычисляем отсортированные элементы
+    const sortedItems = computed(() => {
+      if (sortType.value === 'rating') {
+        // Сортировка по рейтингу (по убыванию)
+        return [...items.value].sort((a, b) => (b.rating || 0) - (a.rating || 0))
+      } else {
+        // Сортировка по дате добавления (по возрастанию - от старой к новой)
+        return [...items.value].sort((a, b) => new Date(a.created_date) - new Date(b.created_date))
+      }
+    })
 
     // Загрузка публичной коллекции
     const loadPublicCollection = async () => {
@@ -131,6 +159,11 @@ export default {
         isLoading.value = false
       }
     }
+    
+    // Переключение типа сортировки
+    const toggleSort = () => {
+      sortType.value = sortType.value === 'date' ? 'rating' : 'date'
+    }
 
     onMounted(() => {
       loadPublicCollection()
@@ -151,7 +184,10 @@ export default {
       items,
       collectionName,
       isLoading,
-      error
+      error,
+      sortType,
+      sortedItems,
+      toggleSort
     }
   }
 }
@@ -253,6 +289,39 @@ export default {
   color: #2563eb;
 }
 
+/* Кнопка сортировки */
+.public-collection-sort-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.public-collection-sort-button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.public-collection-sort-button:hover {
+  background-color: #1d4ed8;
+}
+
+.public-collection-sort-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 /* Состояние загрузки */
 .public-collection-loading {
   display: flex;
@@ -338,5 +407,9 @@ export default {
 
 .public-collection-list-leave-active {
   position: absolute;
+}
+
+.public-collection-move {
+  transition: transform 0.5s ease;
 }
 </style>

@@ -1,5 +1,12 @@
 <template>
   <div class="comparison-card-image-container">
+    <!-- Нумерация карточек -->
+    <div class="comparison-card-number-badge">
+      <Badge class="comparison-card-number-badge-content">
+        {{ itemNumber }}
+      </Badge>
+    </div>
+    
     <!-- Контейнер для изображений -->
     <div v-if="images.length > 0" class="comparison-card-image-wrapper">
       <!-- Текущее изображение -->
@@ -85,6 +92,10 @@ export default {
     title: {
       type: String,
       default: 'Без названия'
+    },
+    itemNumber: {
+      type: Number,
+      default: 0
     }
   },
   setup(props) {
@@ -255,6 +266,24 @@ export default {
   fill: #fbbf24;
   color: #fbbf24;
   margin-right: 0.25rem;
+}
+
+/* Нумерация карточек */
+.comparison-card-number-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+}
+
+.comparison-card-number-badge-content {
+  background-color: rgba(37, 99, 235, 0.95);
+  color: white;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
 }
 
 /* Анимации */

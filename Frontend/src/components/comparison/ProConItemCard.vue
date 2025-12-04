@@ -1,23 +1,23 @@
 <template>
   <div
-    :class="['pro-con-item-card', isPro ? 'pro-con-item-card-pro' : (type === 'note' ? 'pro-con-item-card-note' : 'pro-con-item-card-con')]"
+    :class="cardClasses"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
   >
     <div class="pro-con-item-content">
-      <div :class="['pro-con-item-bullet', type === 'note' ? 'pro-con-item-bullet-note' : (isPro ? 'pro-con-item-bullet-pro' : 'pro-con-item-bullet-con')]" />
+      <div :class="bulletClasses" />
       <div class="pro-con-item-text-container">
         <div class="pro-con-item-text-content">
           <p class="pro-con-item-text">{{ item.text }}</p>
           <Badge
-            v-if="item.impact !== undefined"
+            v-if="showImpactBadge"
             variant="outline"
-            :class="['pro-con-item-impact-badge', getImpactClass(item.impact || 5)]"
+            :class="impactBadgeClasses"
           >
             {{ item.impact || 5 }}/10
           </Badge>
         </div>
-        <div v-if="item.impact !== undefined && !readonly" class="pro-con-item-slider-container" :class="{ 'pro-con-item-slider-container-open': isHovered }">
+        <div v-if="showImpactSlider" class="pro-con-item-slider-container" :class="sliderContainerClasses">
           <div class="pro-con-item-slider-content">
             <div class="pro-con-item-slider-header">
               <div class="pro-con-item-slider-label">
@@ -26,7 +26,7 @@
               </div>
               <Slider
                 :model-value="[item.impact || 5]"
-                @update:model-value="val => onUpdateImpact(val[0])"
+                @update:model-value="onUpdateImpact"
                 :min="1"
                 :max="10"
                 :step="1"
@@ -37,7 +37,7 @@
         </div>
       </div>
       <Button
-        v-if="!readonly"
+        v-if="showDeleteButton"
         variant="ghost"
         size="icon"
         @click="onRemove"
@@ -83,6 +83,33 @@ export default {
   setup(props, { emit }) {
     const isHovered = ref(false)
 
+    // Вычисляемые свойства для классов
+    const cardClasses = computed(() => [
+      'pro-con-item-card',
+      props.isPro ? 'pro-con-item-card-pro' : (props.item.type === 'note' ? 'pro-con-item-card-note' : 'pro-con-item-card-con')
+    ])
+
+    const bulletClasses = computed(() => [
+      'pro-con-item-bullet',
+      props.item.type === 'note' ? 'pro-con-item-bullet-note' : (props.isPro ? 'pro-con-item-bullet-pro' : 'pro-con-item-bullet-con')
+    ])
+
+    const impactBadgeClasses = computed(() => [
+      'pro-con-item-impact-badge',
+      getImpactClass(props.item.impact || 5)
+    ])
+
+    const sliderContainerClasses = computed(() => ({
+      'pro-con-item-slider-container': true,
+      'pro-con-item-slider-container-open': isHovered.value
+    }))
+
+    // Условия отображения элементов
+    const showImpactBadge = computed(() => props.item.impact !== undefined)
+    const showImpactSlider = computed(() => props.item.impact !== undefined && !props.readonly)
+    const showDeleteButton = computed(() => !props.readonly)
+
+    // Функция для определения класса влияния
     const getImpactClass = (impact) => {
       if (impact <= 3) {
         return props.isPro ? 'pro-con-item-impact-badge-low-pro' : 'pro-con-item-impact-badge-low-con'
@@ -93,12 +120,13 @@ export default {
       return props.isPro ? 'pro-con-item-impact-badge-high-pro' : 'pro-con-item-impact-badge-high-con'
     }
 
+    // Обработчики событий
     const onRemove = () => {
       emit('remove')
     }
 
     const onUpdateImpact = (value) => {
-      emit('update:impact', value)
+      emit('update:impact', value[0])
     }
 
     const onMouseEnter = () => {
@@ -112,8 +140,16 @@ export default {
     }
 
     return {
-      isHovered,
-      getImpactClass,
+      // Классы
+      cardClasses,
+      bulletClasses,
+      impactBadgeClasses,
+      sliderContainerClasses,
+      // Условия отображения
+      showImpactBadge,
+      showImpactSlider,
+      showDeleteButton,
+      // Обработчики
       onRemove,
       onUpdateImpact,
       onMouseEnter,
@@ -132,20 +168,39 @@ export default {
 }
 
 .pro-con-item-card-note {
-  background-color: rgba(249, 250, 251, 0.3) !important; /* gray-50 with 30% opacity */
-  border-color: #f3f4f6 !important; /* gray-100 */
+  background-color: rgba(224, 242, 254, 0.3) !important; /* sky-50 with 30% opacity */
+  border-color: #e0f2fe !important; /* sky-100 */
 }
 
 .pro-con-item-bullet-note {
-  background-color: #9ca3af !important; /* gray-400 */
+  background-color: #0ea5e9 !important; /* sky-500 */
 }
 
-div .pro-con-item-bullet-note {
-  background-color: #9ca3af !important; /* gray-400 */
+.pro-con-item-card-wrapper.pro-con-item-card-note {
+  background-color: rgba(224, 242, 254, 0.3) !important; /* sky-50 with 30% opacity */
+  border-color: #e0f2fe !important; /* sky-100 */
 }
 
-.pro-con-item-card-note .pro-con-item-bullet-note {
-  background-color: #9ca3af !important; /* gray-400 */
+.pro-con-item-card-wrapper .pro-con-item-bullet-note {
+  background-color: #0ea5e9 !important; /* sky-500 */
+}
+
+div.pro-con-item-card-note {
+  background-color: rgba(224, 242, 254, 0.3) !important; /* sky-50 with 30% opacity */
+  border-color: #e0f2fe !important; /* sky-100 */
+}
+
+div.pro-con-item-bullet-note {
+  background-color: #0ea5e9 !important; /* sky-500 */
+}
+
+.pro-con-item-card.pro-con-item-card-note {
+  background-color: rgba(224, 242, 254, 0.3) !important; /* sky-50 with 30% opacity */
+  border-color: #e0f2fe !important; /* sky-100 */
+}
+
+.pro-con-item-card .pro-con-item-bullet-note {
+  background-color: #0ea5e9 !important; /* sky-500 */
 }
 
 .pro-con-item-card-pro {
