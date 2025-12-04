@@ -264,7 +264,7 @@ export default {
   width: 1rem;
   height: 1rem;
   fill: #fbbf24;
-  color: #fbbf24;
+  color: #cfc19f;
   margin-right: 0.25rem;
 }
 
@@ -273,11 +273,12 @@ export default {
   position: absolute;
   top: 0.75rem;
   left: 0.75rem;
+  z-index: 10;
 }
 
 .comparison-card-number-badge-content {
-  background-color: rgba(37, 99, 235, 0.95);
-  color: white;
+  background-color: rgba(247, 247, 247, 0.853);
+  color: rgba(44, 44, 44, 0.811);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   font-size: 1rem;
   line-height: 1.5rem;
