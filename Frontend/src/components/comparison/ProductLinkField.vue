@@ -4,61 +4,32 @@
       <div class="product-link-field-column">
         <!-- URL -->
         <div class="product-link-input-container product-link-url-input">
-          <Input
-            :value="link.url"
-            @input="updateUrl"
-            :placeholder="`Ссылка на товар ${index + 1}`"
-            :disabled="isLoading"
-          />
+          <Input :value="link.url" @input="updateUrl" :placeholder="`Ссылка на товар ${index + 1}`"
+            :disabled="isLoading" />
           <Link2 class="product-link-input-icon product-link-url-icon" />
         </div>
 
         <!-- Название товара -->
         <div class="product-link-input-container product-link-title-input">
-          <Input
-            :value="link.title"
-            @input="updateTitle"
-            placeholder="Название товара"
-            :disabled="isLoading"
-          />
+          <Input :value="link.title" @input="updateTitle" placeholder="Название товара" :disabled="isLoading" />
           <Tag class="product-link-input-icon product-link-title-icon" />
         </div>
 
         <!-- Цена -->
         <div class="product-link-input-container product-link-price-input">
-          <Input
-            type="number"
-            :value="link.price"
-            @input="updatePrice"
-            placeholder="Цена, ₽"
-            :disabled="isLoading"
-          />
+          <Input type="number" :value="link.price" @input="updatePrice" placeholder="Цена, ₽" :disabled="isLoading" />
           <DollarSign class="product-link-input-icon product-link-price-icon" />
         </div>
-        
+
         <!-- Ссылки на изображения -->
-        <ProductImageField
-          :imageUrls="link.imageUrls"
-          @update:imageUrls="updateImageUrls"
-          @paste="handleImagePaste"
-          :isLoading="isLoading"
-          @dragenter="handleDragEnter"
-          @dragleave="handleDragLeave"
-          @drop="handleDrop"
-          :isDragOver="isDragOver"
-        />
+        <ProductImageField :imageUrls="link.imageUrls" @update:imageUrls="updateImageUrls" @paste="handleImagePaste"
+          :isLoading="isLoading" @dragenter="handleDragEnter" @dragleave="handleDragLeave" @drop="handleDrop"
+          :isDragOver="isDragOver" />
       </div>
 
       <!-- Кнопка удаления -->
-      <Button
-        v-if="showRemoveButton"
-        type="button"
-        variant="ghost"
-        size="icon"
-        @click="remove"
-        :disabled="isLoading"
-        class="product-link-remove-button"
-      >
+      <Button v-if="showRemoveButton" type="button" variant="ghost" size="icon" @click="remove" :disabled="isLoading"
+        class="product-link-remove-button">
         <X class="product-link-remove-icon" />
       </Button>
     </div>
@@ -111,9 +82,9 @@ export default {
     const updateUrl = (event) => {
       const newUrl = event.target.value
       emit('update:link', { ...props.link, url: newUrl })
-      
-      // Если URL валиден и заголовок еще не установлен, пытаемся получить имя товара
-      if (newUrl && !props.link.title) {
+
+      // Если URL валиден и заголовок еще не установлен (или содержит значение по умолчанию), пытаемся получить имя товара
+      if (newUrl && (!props.link.title || props.link.title === 'Загрузка...' || props.link.title === 'Без названия')) {
         fetchProductName(newUrl)
       }
     }
@@ -156,20 +127,22 @@ export default {
      * @param {string} url - URL сайта
      */
     const fetchProductName = async (url) => {
+      console.log('fetchProductName вызван с URL:', url);
       try {
         // Проверяем, что URL валиден
         new URL(url)
-        
+
         // Показываем индикатор загрузки
-        const originalTitle = props.link.title
         emit('update:link', { ...props.link, title: 'Загрузка...' })
-        
+
         // Получаем данные предварительного просмотра с кэшированием
         const previewData = await getCachedPreviewData(url)
-        
+        console.log('Получены данные предварительного просмотра:', previewData);
+
         // Обновляем название товара
-        emit('update:link', { 
-          ...props.link, 
+        // Используем текущее значение props.link для получения актуальных данных
+        emit('update:link', {
+          ...props.link,
           title: previewData.title || 'Без названия',
           imageUrls: props.link.imageUrls || previewData.image || '',
           description: props.link.description || previewData.description || ''

@@ -15,7 +15,7 @@
           Добавьте ссылки на товары и сравните их плюсы и минусы
         </p>
       </div>
-    
+
       <!-- Кнопки экспорта/импорта -->
       <div class="comparison-actions">
         <div class="comparison-action-buttons">
@@ -23,40 +23,31 @@
             <Download class="comparison-action-icon" />
             Экспорт
           </Button>
-          
+
           <Button variant="outline" class="comparison-action-button" @click="triggerImport">
             <Upload class="comparison-action-icon" />
             Импорт
           </Button>
-          
+
           <!-- Кнопки для работы с коллекциями -->
           <Button variant="outline" class="comparison-action-button" @click="goToCollections">
             <FolderOpen class="comparison-action-icon" />
             Открыть
           </Button>
-          
+
           <!-- Кнопки для работы с публичными ссылками -->
-          <Button
-            v-if="collectionId && isCollectionLoaded"
-            variant="outline"
-            class="comparison-action-button"
-            @click="togglePublicLink"
-          >
+          <Button v-if="collectionId && isCollectionLoaded" variant="outline" class="comparison-action-button"
+            @click="togglePublicLink">
             <component :is="publicLink ? 'Link' : 'Link2'" class="comparison-action-icon" />
             {{ publicLink ? 'Удалить ссылку' : 'Создать ссылку' }}
           </Button>
-          
-          <Button
-            v-if="publicLink"
-            variant="outline"
-            class="comparison-action-button"
-            @click="copyPublicLink"
-          >
+
+          <Button v-if="publicLink" variant="outline" class="comparison-action-button" @click="copyPublicLink">
             <Copy class="comparison-action-icon" />
             Копировать ссылку
           </Button>
         </div>
-        
+
         <!-- Отображение публичной ссылки -->
         <div v-if="publicLink" class="comparison-public-link">
           <div class="comparison-public-link-content">
@@ -69,14 +60,11 @@
             </Button>
           </div>
         </div>
-        
+
         <!-- Поле для ввода данных импорта -->
         <div v-if="showImportField" class="comparison-import-field">
-          <Textarea
-            v-model="importData"
-            placeholder="Вставьте JSON данные для импорта..."
-            class="comparison-import-textarea"
-          />
+          <Textarea v-model="importData" placeholder="Вставьте JSON данные для импорта..."
+            class="comparison-import-textarea" />
           <div class="comparison-import-buttons">
             <Button @click="handleImport" class="comparison-import-button">
               Импортировать
@@ -86,7 +74,7 @@
             </Button>
           </div>
         </div>
-        
+
         <!-- Модальное окно для выбора коллекции -->
         <Dialog v-model:open="showCollectionsDialog">
           <DialogContent class="comparison-collections-dialog">
@@ -106,7 +94,7 @@
           </DialogContent>
         </Dialog>
       </div>
-      
+
       <!-- Кнопка сортировки -->
       <div class="comparison-sort-container">
         <Button @click="toggleSort" class="comparison-sort-button">
@@ -114,19 +102,16 @@
           Сортировать по: {{ sortType === 'date' ? 'Рейтингу' : 'Дате добавления' }}
         </Button>
       </div>
-      
+
       <!-- Форма добавления -->
       <div class="comparison-add-form-container">
         <AddLinkForm :on-add-links="handleAddLinks" :is-loading="isLoadingItems" />
       </div>
-      
+
       <!-- Элементы управления рейтингами -->
       <div class="comparison-rating-controls">
-        <RatingControls
-          :initial-price-weight="ratingWeights.priceRatingWeight"
-          :initial-pros-cons-weight="ratingWeights.prosConsRatingWeight"
-          :on-save="handleRatingWeightsSave"
-        />
+        <RatingControls :initial-price-weight="ratingWeights.priceRatingWeight"
+          :initial-pros-cons-weight="ratingWeights.prosConsRatingWeight" :on-save="handleRatingWeightsSave" />
       </div>
 
       <!-- Список товаров -->
@@ -145,17 +130,9 @@
       </div>
       <div v-else class="comparison-items">
         <transition-group name="comparison-list" tag="div" class="comparison-items-grid" move-class="comparison-move">
-          <div
-            v-for="(item, index) in sortedItems"
-            :key="item.id"
-            class="comparison-item-container"
-          >
-            <ComparisonCard
-              :item="item"
-              :on-update="(data) => handleUpdateItem(item.id, data)"
-              :on-delete="() => handleDeleteItem(item.id)"
-              :item-number="index + 1"
-            />
+          <div v-for="(item, index) in sortedItems" :key="item.id" class="comparison-item-container">
+            <ComparisonCard :item="item" :on-update="(data) => handleUpdateItem(item.id, data)"
+              :on-delete="() => handleDeleteItem(item.id)" :item-number="index + 1" />
           </div>
         </transition-group>
       </div>
@@ -207,7 +184,7 @@ export default {
   setup() {
     const route = useRoute()
     const router = useRouter()
-    
+
     // Используем composable для управления коллекцией
     const {
       items,
@@ -219,10 +196,10 @@ export default {
       autoSaveCollection,
       saveCurrentCollection
     } = useCollection()
-    
+
     // Используем composable для управления импортом/экспортом
     const { handleExport: exportItems, handleImport: importItems } = useImportExport()
-    
+
     // Используем composable для управления публичными ссылками
     const {
       publicLink,
@@ -230,7 +207,7 @@ export default {
       copyPublicLink: copyLink,
       getFullPublicLink
     } = usePublicLink()
-    
+
     // Используем composable для управления рейтингами
     const {
       handleRatingWeightsSave: saveRatingWeights,
@@ -239,15 +216,15 @@ export default {
       deleteItem,
       recalculateAllRatings
     } = useRating()
-    
+
     const isLoadingItems = ref(false)
     const importData = ref('')
     const showImportField = ref(false)
     const showCollectionsDialog = ref(false)
-    
+
     // Состояние сортировки
     const sortType = ref('date') // 'date' или 'rating'
-    
+
     // Вычисляем отсортированные элементы
     const sortedItems = computed(() => {
       if (sortType.value === 'rating') {
@@ -258,12 +235,12 @@ export default {
         return [...items.value].sort((a, b) => new Date(a.created_date) - new Date(b.created_date))
       }
     })
-    
+
     // Инициализация
     onMounted(async () => {
       await initializeCollection()
     })
-    
+
     // Отслеживаем изменения в items и запускаем автосохранение
     watch(items, () => {
       // Проверяем, есть ли ID коллекции в URL и была ли коллекция загружена
@@ -271,27 +248,27 @@ export default {
         autoSaveCollection(items.value, ratingWeights.value)
       }
     }, { deep: true })
-    
+
     // Включение/выключение публичной ссылки
     const togglePublicLink = async () => {
       await toggleLink(collectionId.value)
     }
-    
+
     // Копирование публичной ссылки в буфер обмена
     const copyPublicLink = async () => {
       await copyLink(fullPublicLink.value)
     }
-    
+
     // Полная публичная ссылка
     const fullPublicLink = computed(() => {
       return getFullPublicLink(publicLink.value)
     })
-    
+
     // Функция для экспорта данных
     const handleExport = () => {
       exportItems(items.value)
     }
-    
+
     // Функция для импорта данных
     const handleImport = () => {
       importItems(
@@ -302,11 +279,11 @@ export default {
         (data) => { importData.value = data }
       )
     }
-    
+
     const triggerImport = () => {
       showImportField.value = true
     }
-    
+
     // Обработчик сохранения весов рейтингов
     const handleRatingWeightsSave = (weights) => {
       saveRatingWeights(weights, (newWeights) => {
@@ -318,17 +295,19 @@ export default {
       // Сохраняем коллекцию с новыми настройками рейтингов
       saveCurrentCollection(items.value, weights)
     }
-    
+
     const handleAddLinks = async (linksData) => {
+      console.log('handleAddLinks вызван с данными:', linksData);
       isLoadingItems.value = true
-      
+
       try {
         for (const linkData of linksData) {
+          console.log('Обработка ссылки:', linkData);
           // Создаем товар с данными из формы
           const newItem = {
             url: linkData.url,
             title: linkData.title || 'Товар ' + (items.value.length + 1),
-            description: '',
+            description: linkData.description || '',
             images: linkData.images || [],
             price: linkData.price ? parseFloat(linkData.price) : 0,
             currency: '₽',
@@ -336,9 +315,11 @@ export default {
             cons: [],
             rating: 50
           }
-          
+
+          console.log('Создан новый элемент:', newItem);
           // Добавляем новый элемент и пересчитываем рейтинги
           const { itemsWithRatings } = createItem(newItem, items.value, ratingWeights.value)
+          console.log('Элементы после создания:', itemsWithRatings);
           items.value = itemsWithRatings
         }
       } catch (error) {
@@ -347,27 +328,27 @@ export default {
         isLoadingItems.value = false
       }
     }
-    
+
     const handleUpdateItem = (id, data) => {
       const updatedItems = updateItem(id, data, items.value, ratingWeights.value)
       items.value = updatedItems
     }
-    
+
     const handleDeleteItem = (id) => {
       const updatedItems = deleteItem(id, items.value)
       items.value = updatedItems
     }
-    
+
     // Переход к странице коллекций
     const goToCollections = () => {
       router.push('/')
     }
-    
+
     // Переключение типа сортировки
     const toggleSort = () => {
       sortType.value = sortType.value === 'date' ? 'rating' : 'date'
     }
-    
+
     return {
       items,
       sortedItems,
@@ -721,6 +702,7 @@ export default {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

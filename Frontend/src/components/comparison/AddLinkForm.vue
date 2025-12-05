@@ -14,42 +14,21 @@
     <CardContent class="add-link-form-content">
       <div class="add-link-form-fields">
         <transition-group name="list" tag="div" class="add-link-form-fields">
-          <ProductLinkField
-            v-for="(link, index) in links"
-            :key="index"
-            :link="link"
-            :index="index"
-            :is-loading="isLoading"
-            :show-remove-button="links.length > 1"
-            :is-drag-over="isDragOver"
-            @update:link="(newLink) => updateLink(index, newLink)"
-            @remove="() => removeLink(index)"
-            @paste="(event) => handleImagePaste(index, event)"
-            @dragenter="handleDragEnter"
-            @dragleave="handleDragLeave"
-            @drop="(event) => handleDrop(event, index)"
-            class="add-link-form-field-group"
-          />
+          <ProductLinkField v-for="(link, index) in links" :key="index" :link="link" :index="index"
+            :is-loading="isLoading" :show-remove-button="links.length > 1" :is-drag-over="isDragOver"
+            @update:link="(newLink) => updateLink(index, newLink)" @remove="() => removeLink(index)"
+            @paste="(event) => handleImagePaste(index, event)" @dragenter="handleDragEnter" @dragleave="handleDragLeave"
+            @drop="(event) => handleDrop(event, index)" class="add-link-form-field-group" />
         </transition-group>
 
         <div class="add-link-form-button-container">
-          <Button
-            v-if="links.length < 10"
-            type="button"
-            variant="outline"
-            @click="addLinkField"
-            class="add-link-form-add-button"
-            :disabled="isLoading"
-          >
+          <Button v-if="links.length < 10" type="button" variant="outline" @click="addLinkField"
+            class="add-link-form-add-button" :disabled="isLoading">
             <Plus class="add-link-form-button-icon" />
             Добавить ссылку
           </Button>
-          <Button
-            type="button"
-            @click="() => handleAddItems(onAddLinks)"
-            :disabled="isLoading || !isFormValid"
-            class="add-link-form-submit-button"
-          >
+          <Button type="button" @click="() => { console.log('Кнопка загрузки нажата'); handleAddItems(onAddLinks); }"
+            :disabled="isLoading || !isFormValid" class="add-link-form-submit-button">
             <Loader2 v-if="isLoading" class="add-link-form-loading-icon" />
             <span v-if="isLoading" class="add-link-form-loading-text">Загрузка...</span>
             <span v-else class="add-link-form-submit-text">Загрузить товары</span>
@@ -179,7 +158,7 @@ export default {
   margin-bottom: 1rem;
 }
 
-.add-link-form-fields > :not(:last-child) {
+.add-link-form-fields> :not(:last-child) {
   margin-bottom: 1rem;
 }
 
@@ -247,6 +226,7 @@ export default {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -256,6 +236,7 @@ export default {
 .list-leave-active {
   transition: all 0.3s ease;
 }
+
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
