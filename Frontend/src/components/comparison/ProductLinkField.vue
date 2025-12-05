@@ -81,6 +81,7 @@ export default {
   setup(props, { emit }) {
     const updateUrl = (event) => {
       const newUrl = event.target.value
+      console.log('updateUrl вызван с новым URL:', newUrl);
       emit('update:link', { ...props.link, url: newUrl })
 
       // Если URL валиден и заголовок еще не установлен (или содержит значение по умолчанию), пытаемся получить имя товара

@@ -68,7 +68,9 @@ export function useAddLinkForm() {
    */
   const handleAddItems = (onAddLinks) => {
     console.log("Ссылки перед фильтрацией:", links.value);
-    const validLinks = links.value.filter((link) => link.url.trim());
+    const validLinks = links.value.filter(
+      (link) => link.url && link.url.trim()
+    );
     console.log("Валидные ссылки:", validLinks);
 
     if (validLinks.length > 0) {
