@@ -134,8 +134,8 @@ export default {
         new URL(url)
 
         // Показываем индикатор загрузки
-        const updatedLink = { ...props.link, url: url, title: 'Загрузка...' };
-        emit('update:link', updatedLink)
+        const updatedLink1 = { ...props.link, url: url, title: 'Загрузка...' };
+        emit('update:link', updatedLink1)
 
         // Получаем данные предварительного просмотра с кэшированием
         const previewData = await getCachedPreviewData(url)
@@ -143,18 +143,18 @@ export default {
 
         // Обновляем название товара
         // Используем текущее значение props.link для получения актуальных данных
-        const updatedLink = {
+        const updatedLink2 = {
           ...props.link,
           url: url,
           title: previewData.title || 'Без названия',
           imageUrls: props.link.imageUrls || previewData.image || '',
           description: props.link.description || previewData.description || ''
         };
-        emit('update:link', updatedLink)
+        emit('update:link', updatedLink2)
       } catch (error) {
         console.error('Ошибка при получении данных товара:', error)
-        const updatedLink = { ...props.link, url: url, title: 'Без названия' };
-        emit('update:link', updatedLink)
+        const updatedLink3 = { ...props.link, url: url, title: 'Без названия' };
+        emit('update:link', updatedLink3)
       }
     }
 
